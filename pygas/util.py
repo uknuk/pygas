@@ -14,10 +14,10 @@ def load_artists():
         return art_dirs, art_names
 
 
-def cut(name, max):
+def cut(name, limit):
     s = ""
     for w in name.split():
-        if len(s) + len(w) < max:
+        if len(s) + len(w) < limit:
             s += w + " "
         else:
             break

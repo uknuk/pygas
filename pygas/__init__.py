@@ -23,7 +23,7 @@ View.COLOR = {
     }
 
 
-View.FONT_SIZE = {
+View.font_size = {
     'art': 24,
     'selArt': 22,
     'alb': 24,
