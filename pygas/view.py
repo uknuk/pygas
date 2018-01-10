@@ -9,18 +9,19 @@ class View:
 
     def __init__(self, app):
         self.win = Gtk.ApplicationWindow(application=app,
-                                         defaultHeight=self.HEIGHT,
-                                         defaultWidth=self.WIDTH,
-                                         windowPosition=Gtk.WindowPosition.CENTER)
+                                         default_height=self.HEIGHT,
+                                         default_width=self.WIDTH,
+                                         window_position=Gtk.WindowPosition.CENTER)
 
         self.header = Gtk.HeaderBar(title="Python Gnome Audio Streamer")
         self.header.set_show_close_button(True)
-        self.win.set_title_bar(self.header)
+        self.win.set_titlebar(self.header)
 
         self.buffer = Gtk.TextBuffer()
 
         css = Gtk.CssProvider()
-        css.load_from_data("GtkTextView { font-size: 16px; font-weight: bold; color: #a00; }")
+        css.load_from_data(
+            bytes("GtkTextView { font-size: 16px; font-weight: bold; color: #a00; }".encode()))
 
         self.frames = DotMap({
             "player": Gtk.Box(orientation=Gtk.Orientation.VERTICAL),
@@ -29,7 +30,7 @@ class View:
 
         sel_arts = Gtk.FlowBox(max_children_per_line=10)
         text = Gtk.TextView(buffer=self.buffer, wrap_mode=Gtk.WrapMode.WORD)
-        text.get_style_content().add_provider(css, 0)
+        text.get_style_context().add_provider(css, 0)
 
         self.pack_start(self.frames.arts, sel_arts)
         self.pack_start(self.frames.arts, text)
@@ -45,7 +46,7 @@ class View:
 
         scroll_win = Gtk.ScrolledWindow()
         scroll_win.add(self.stack)
-        self.win.add(self.stack)
+        self.win.add(scroll_win)
 
     def change_color(self, kind, n, fro, to):
         lbl = self.labels[kind][n]
@@ -78,15 +79,19 @@ class View:
         return lbl.set_markup(
             "<span color='{}' font='{}'>{}</span>".format(color, size, txt.replace('&', '&amp;')))
 
+    def switch_to(self, name):
+        self.stack.set_visible_child_name(name)
+        self.search.bar.set_search_mode(name == 'arts')
+
     def make_search(self):
-        search = DotMap({"bar": Gtk.SearchBar, "entry": Gtk.SearchEntry})
+        search = DotMap({"bar": Gtk.SearchBar(), "entry": Gtk.SearchEntry()})
         search.bar.connect_entry(search.entry)
         search.bar.add(search.entry)
         self.header.add(search.bar)
         return search
 
     def make_stack_switcher(self):
-        stack = Gtk.Stack
+        stack = Gtk.Stack()
         for n in ['player', 'arts']:
             stack.add_titled(self.frames[n], n, n.title())
 

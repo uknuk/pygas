@@ -1,8 +1,12 @@
 from .view import View
+from .app import App
+from .player import Player
 
-DIRS_FILE = '.mhdirs'
-LAST_FILE = '.mlast'
-NAME_MAX = {
+
+App.DIRS_FILE = '.mhdirs'
+App.LAST_FILE = '.mlast'
+
+App.NAME_MAX = {
     "art": 20,
     "track": 40
 }

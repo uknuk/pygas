@@ -9,7 +9,7 @@ from pygas import App, Player
 
 
 if __name__ == '__main__':
-    Glib.set_prgname('Pygas')
+    GLib.set_prgname('Pygas')
     app = App()
     player = Player(app)
     app.run(player)

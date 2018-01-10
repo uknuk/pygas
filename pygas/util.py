@@ -1,22 +1,20 @@
 import os
-from . import DIRS_FILE, LAST_FILE, NAME_MAX
 
-
-def load_artists():
-    with open(os.path.join(os.environ['HOME'], DIRS_FILE)) as f:
+def load_artists(dirs_file, name_max):
+    with open(os.path.join(os.environ['HOME'], dirs_file)) as f:
         dirs = f.readlines().pop().split()
         art_dirs = {}
         art_names = {}
         for d in dirs:
             for item in os.listdir(d):
                 art_dirs[item] = os.path.join(d, item)
-                art_names[item] = cut(item, NAME_MAX['art'])
+                art_names[item] = cut(item, name_max['art'])
         return art_dirs, art_names
 
 
 def cut(name, limit):
     s = ""
-    for w in name.split():
+    for w in name.split('_'):
         if len(s) + len(w) < limit:
             s += w + " "
         else:
