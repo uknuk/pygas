@@ -1,6 +1,6 @@
 import gi
 from gi.repository import GLib
-from pygas import App, Player
+from pygas import App
 
 # win = Gtk.Window(title="Hello World")
 # win.show()
@@ -10,6 +10,4 @@ from pygas import App, Player
 
 if __name__ == '__main__':
     GLib.set_prgname('Pygas')
-    app = App()
-    player = Player(app)
-    app.run(player)
+    App().run()

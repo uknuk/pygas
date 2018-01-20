@@ -1,45 +1,46 @@
 import gi
 from gi.repository import Gtk
 from gi.repository import Gdk
+from dotmap import DotMap
 from . import util
 from .view import View
+from .artists import Artists
+from .albums import Albums
+from .player import Player
 
 
 class App(Gtk.Application):
 
     def __init__(self):
         super().__init__()
-        self.player = None
         self.view = None
-        self.art_dirs, self.art_names = util.load_artists(self.DIRS_FILE, self.NAME_MAX)
+        self.player = Player(self)
+        self.artists = Artists(self)
+        self.albums = Albums(self)
 
         self.key_map = {
             'Left': lambda: self.view.switch_to('player'),
-            'Right': self.show_artists,
+            'Right': self.switch_to_artists,
             'Up': lambda: self.view.scroll('Up'),
             'Down': lambda: self.view.scroll('Down'),
             'F1': self.reload_artists
         }
-
-    def run(self, player):
-        self.player = player
-        super().run()
 
     def do_startup(self):
         Gtk.Application.do_startup(self)
         self.view = View(self)
         self.view.win.connect('key_press_event', self.on_key_press)
         self.view.search.entry.connect(
-            "search-changed", lambda w: self.show_artists(self.view.search.entry.get_text()))
+            "search-changed", lambda w: self.artists.show(self.view.search.entry.get_text()))
 
     def do_activate(self):
-        self.show_artists()
-        self.player.init(self.view)
+        self.artists.show()
 
-    def on_quit(self):
-        self.quit()
+    def on_destroy(self):
+        self.player.stop()
+        Gtk.main_quit()
 
-    def on_key_press(self, widget, event):
+    def on_key_press(self, _, event):
         key = Gdk.keyval_name(event.get_keyval()[1])
         if key in self.key_map:
             self.key_map[key]()
@@ -47,17 +48,33 @@ class App(Gtk.Application):
         else:
             return False
 
-    def show_artists(self, entry=None):
+    def switch_to_artists(self):
         self.view.switch_to('arts')
-        arts = self.art_names.keys()
-        if entry:
-            arts = list(filter(lambda a: a.replace('_', ' ').lower().startswith(entry), arts))
+        self.show_artists()
 
-        text = " | ".join([self.art_names[a] for a in arts])
-        self.view.buffer.set_text(text, -1)
-        self.view.win.show_all()
+    def set_info(self, track):
+        name_size = len(self.artists.played + self.albums.played + track)
+        self.view.set_font('info', util.font_size(name_size, 'info'))
+        self.view.write_label('art', self.artists.played)
+        self.view.write_label('alb', self.albums.played)
+        self.view.write_label('track', track)
 
-    def reload_artists(self):
-        self.art_dirs, self.art_names = util.load_artists(self.DIRS_FILE, self.NAME_MAX)
-        if self.view.stack.visible_child_name == "arts":
-            self.show_artists()
+
+
+
+    def play_album(self, alb_num, track_num):
+        self.view.change_colors('albs', self.alb.num, alb_num)
+        self.alb.num = alb_num
+        self.view.set_font('rec', util.font_size(len(self.art.played + self.alb.played), 'info'));
+        self.view.write_label('art', self.art.played)
+        self.alb.played = self.albs[self.alb.num]
+        self.view.write_label('alb', util.base(self.alb.played))
+        self.view.write_label("sel_art", "")
+        self.player.load_album(self.art.dirs[self.art.played], self.alb.played)
+        tracks = self.get_tracks
+
+
+
+
+
+

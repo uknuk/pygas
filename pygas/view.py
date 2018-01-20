@@ -3,6 +3,7 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 from dotmap import DotMap
+from functools import partial
 
 
 class View:
@@ -82,6 +83,17 @@ class View:
     def switch_to(self, name):
         self.stack.set_visible_child_name(name)
         self.search.bar.set_search_mode(name == 'arts')
+
+    def add_buttons(self, kind, labels, fun):
+        self.clear(kind)
+        n = 0
+        for lbl in labels:
+            btn = self.set_button(kind, lbl, n)
+            btn.connect("clicked", lambda: fun(n))
+            n += 1
+            self.panes[kind].add(btn)
+
+        self.win.show_all()
 
     def make_search(self):
         search = DotMap({"bar": Gtk.SearchBar(), "entry": Gtk.SearchEntry()})
