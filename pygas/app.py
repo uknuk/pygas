@@ -1,7 +1,6 @@
 import gi
 from gi.repository import Gtk
 from gi.repository import Gdk
-from dotmap import DotMap
 from . import util
 from .view import View
 from .artists import Artists
@@ -13,10 +12,12 @@ class App(Gtk.Application):
 
     def __init__(self):
         super().__init__()
-        self.view = None
-        self.player = Player(self)
-        self.artists = Artists(self)
-        self.albums = Albums(self)
+        #Player.init()
+        # self.view = None
+        # self.player = Player(self)
+        Player.init()
+        Artists.load()
+        # self.albums = Albums(self)
 
         self.key_map = {
             'Left': lambda: self.view.switch_to('player'),
@@ -28,13 +29,14 @@ class App(Gtk.Application):
 
     def do_startup(self):
         Gtk.Application.do_startup(self)
-        self.view = View(self)
-        self.view.win.connect('key_press_event', self.on_key_press)
-        self.view.search.entry.connect(
-            "search-changed", lambda w: self.artists.show(self.view.search.entry.get_text()))
+        View.init(self)
+        View.win.connect('key_press_event', self.on_key_press)
+        View.search.entry.connect(
+            "search-changed", lambda w: Artists.show(View.search.entry.get_text()))
 
-    def do_activate(self):
-        self.artists.show()
+    @staticmethod
+    def do_activate():
+        Artists.show()
 
     def on_destroy(self):
         self.player.stop()
@@ -52,12 +54,7 @@ class App(Gtk.Application):
         self.view.switch_to('arts')
         self.show_artists()
 
-    def set_info(self, track):
-        name_size = len(self.artists.played + self.albums.played + track)
-        self.view.set_font('info', util.font_size(name_size, 'info'))
-        self.view.write_label('art', self.artists.played)
-        self.view.write_label('alb', self.albums.played)
-        self.view.write_label('track', track)
+
 
 
 

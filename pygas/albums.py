@@ -1,36 +1,40 @@
 import os
-from .util import util
+from . import util
+from .view import View
+from .artists import Artists
+from .player import Player
 
 class Albums:
-
-    def __init__(self, app):
-        self.app = app
-        self.view = self.app.view
-        self.shown = []
-        self.chosen = []
-        self.played = None
-        self.num = 0
-
-    def show(self, art_dir):
+    
+    shown = []
+    chosen = []
+    played = None
+    num = 0
+       
+    @classmethod
+    def show(cls, art_dir):
         albs = os.listdir(art_dir)
-        names = self.get_names
-        self.shown = list(map(lambda dir: os.path.join(art_dir, dir)), albs)
-        self.view.set_font('albs', self.get_font([names, None]))
-        self.view.add_buttons('albs', names, lambda a,t: self.select(a,t))
+        names = cls.get_names
+        cls.shown = list(map(lambda d: os.path.join(art_dir, d), albs))
+        View.set_font('albs', cls.get_font([names, None]))
+        View.add_buttons('albs', names, lambda a,t: cls.select(a,t))
 
     # t_num - last played track
-    def select(self, a_num, t_num):
-        self.app.artists.selected()
-        self.chosen = self.shown
-        self.play(a_num, t_num)
+    @classmethod
+    def select(cls, a_num, t_num):
+        cls.app.artists.selected()
+        cls.chosen = cls.shown
+        cls.play(a_num, t_num)
 
-    def play(self, a_num, t_num = 0):
-        self.view.change_colors('albs', self.num, a_num)
-        self.num = a_num
-        self.app.set_info_font(self.played)
+    @classmethod
+    def play(cls, a_num, t_num = 0):
+        View.change_colors('albs', cls.num, a_num)
+        cls.num = a_num
+        cls.played = cls.chosen[cls..num]
+        Player.load_album(Artists.played_directory(), cls.played)
+        # move adding track buttons to Player
 
-
-
-    def get_names(self):
-        return list(map(lambda name: util.cut(name, self.app.NAME_MAX["alb"])))
+    @classmethod
+    def get_names(cls):
+        return list(map(lambda name: util.cut(name, cls.app.NAME_MAX["alb"])))
 

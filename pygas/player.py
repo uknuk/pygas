@@ -1,45 +1,60 @@
 import gi
 from gi.repository import Gst
 import os
+from .view import View
+from .albums import Albums
+from .artists import Artists
+from . import util
 
 
 class Player:
+    
+    tracks = []
+    duration = 0
+    bitrate = 0
+    num = None
+    bin = None
+    bus = None
 
-    def __init__(self, app):
+    @classmethod
+    def init(cls):
         Gst.init(None)
-        self.app = app
-        self.view = app.view
-        self.tracks = []
-        self.duration = 0
-        self.bitrate = 0
-        self.num = None
+        cls.bin = Gst.ElementFactory.make("playbin", "play")
+        cls.bus = cls.bin.get_bus()
+        cls.bus.add_signal_watch()
+        cls.bus.connect('message', cls.on_message)
 
-        self.bin = Gst.ElementFactory.make("playbin", "play")
-        self.bus = self.bin.get_bus()
-        self.bus.add_signal_watch()
-        self.bus.connect('message', self.on_message)
-       
-    def on_message(self, bus, msg):
+    @classmethod
+    def on_message(cls, _, msg):
         if msg.type == Gst.MessageType.TAG:
             rate = msg.parse_tag().get_uint('bitrate')[1]  # [1]
-            if rate != self.bitrate:
-                self.bitrate = rate
-                self.view.write_label('rate', "{} kbps".format(int(rate / 1e3)))
+            if rate != cls.bitrate:
+                cls.bitrate = rate
+                View.write_label('rate', "{} kbps".format(int(rate / 1e3)))
 
         if msg.type == Gst.MessageType.EOS:
-            next = self.track_num + 1
-            if next == self.tracks.length:
-                self.app.next_album()
+            next_num = cls.track_num + 1
+            if next_num == cls.tracks.length:
+                Albums.next_track()
             else:
-                self.play_track(next)
+                cls.play_track(next_num)
 
-    def play_track(self, num):
-        self.view.change_colors('tracks', self.track_num, num)
-        self.num = num
-        track = self.tracks[self.num]
-        self.app.set_info(os.path.basename(track))
+    @classmethod
+    def play_track(cls, num):
+        cls.view.change_colors('tracks', cls.track_num, num)
+        cls.num = num
+        track = cls.tracks[cls.num]
+        cls.set_info(os.path.basename(track))
         bin.set_state(Gst.State.NULL)
-        self.duration = 0
+        cls.duration = 0
         bin.set_property('uri', "file://{}".format(track))
         bin.set_state(Gst.State.PLAYING);
-        self.app.save(num)
+        util.save(Artists.played, Albums.played, num)
+
+    @classmethod
+    def set_info(cls, track):
+        name_size = len(Artists.played + Albums.played + track)
+        View.set_font('info', util.font_size(name_size, 'info'))
+        View.write_label('art', Artists.played)
+        View.write_label('alb', Albums.played)
+        View.write_label('track', track)

@@ -7,10 +7,10 @@ from .player import Player
 Artists.DIRS_FILE = '.mhdirs'
 App.LAST_FILE = '.mlast'
 
-App.NAME_MAX = 40
+App.NAME_MAX = {
     "art": 20,
-    "alb": 40,
-    "track": 40
+    "track": 40,
+    "alb": 40
 }
 
 View.WIDTH = 1024
