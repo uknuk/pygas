@@ -1,18 +1,16 @@
 import gi
 from gi.repository import Gst
-import os
+import math
 from .view import View
 from .albums import Albums
-from .artists import Artists
+from .tracks import Tracks
 from . import util
 
 
 class Player:
-    
-    tracks = []
+
     duration = 0
     bitrate = 0
-    num = None
     bin = None
     bus = None
 
@@ -35,26 +33,51 @@ class Player:
         if msg.type == Gst.MessageType.EOS:
             next_num = cls.track_num + 1
             if next_num == cls.tracks.length:
-                Albums.next_track()
+                Albums.next()
             else:
-                cls.play_track(next_num)
+                Tracks.play(next_num)
 
     @classmethod
-    def play_track(cls, num):
-        cls.view.change_colors('tracks', cls.track_num, num)
-        cls.num = num
-        track = cls.tracks[cls.num]
-        cls.set_info(os.path.basename(track))
-        bin.set_state(Gst.State.NULL)
-        cls.duration = 0
+    def play(cls, track):
+        cls.stop()
         bin.set_property('uri', "file://{}".format(track))
-        bin.set_state(Gst.State.PLAYING);
-        util.save(Artists.played, Albums.played, num)
+        bin.set_state(Gst.State.PLAYING)
 
     @classmethod
-    def set_info(cls, track):
-        name_size = len(Artists.played + Albums.played + track)
-        View.set_font('info', util.font_size(name_size, 'info'))
-        View.write_label('art', Artists.played)
-        View.write_label('alb', Albums.played)
-        View.write_label('track', track)
+    def update_position(cls):
+        if not cls.is_state(Gst.State.PLAYING):
+            return True
+
+        if cls.duration == 0:
+            cls.duration = cls.bin.query_duration(Gst.Format.TIME)[1]
+
+        pos = bin.query_position(Gst.Format.TIME)[1]
+        View.slider.fraction = pos / cls.duration
+        View.slider.text = "{}/{}".format(cls.time(pos), cls.time(cls.duration))
+        return True
+
+    @classmethod
+    def change_state(cls):
+        if cls.is_state(Gst.State.PLAYING):
+            cls.bin.set_state(Gst.State.PAUSED)
+        elif cls.is_state(Gst.State.PAUSED):
+            cls.bin.set_state(Gst.State.PLAYING)
+
+    @classmethod
+    def volume(cls, delta):
+        db = math.log10(cls.bin.volume + delta)
+        cls.bin.volume = min(math.pow(10, db/10), cls.bin.volume)
+        View.switch_to('player')
+        View.write_label('vol', "{} db".format(int(db)))
+
+    @classmethod
+    def stop(cls):
+        cls.bin.set_state(Gst.State.NULL)
+        cls.duration = 0
+
+
+
+
+
+
+

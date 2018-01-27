@@ -12,19 +12,16 @@ class App(Gtk.Application):
 
     def __init__(self):
         super().__init__()
-        #Player.init()
-        # self.view = None
-        # self.player = Player(self)
         Player.init()
         Artists.load()
-        # self.albums = Albums(self)
 
         self.key_map = {
-            'Left': lambda: self.view.switch_to('player'),
-            'Right': self.switch_to_artists,
-            'Up': lambda: self.view.scroll('Up'),
-            'Down': lambda: self.view.scroll('Down'),
-            'F1': self.reload_artists
+            'Left': lambda: View.switch_to('player'),
+            'Right': App.switch_to_artists,
+            'Up': lambda: View.scroll('Up'),
+            'Down': lambda: View.scroll('Down'),
+            'F1': Artists.reload,
+            'space': Player.change_state
         }
 
     def do_startup(self):
@@ -37,9 +34,11 @@ class App(Gtk.Application):
     @staticmethod
     def do_activate():
         Artists.show()
+        Gtk.timeout_add(60*1000, lambda: Player.update_position())
 
+    @staticmethod
     def on_destroy(self):
-        self.player.stop()
+        Player.stop()
         Gtk.main_quit()
 
     def on_key_press(self, _, event):
@@ -50,25 +49,12 @@ class App(Gtk.Application):
         else:
             return False
 
-    def switch_to_artists(self):
-        self.view.switch_to('arts')
-        self.show_artists()
+    @staticmethod
+    def switch_to_artists():
+        View.switch_to('arts')
+        Artists.show()
 
 
-
-
-
-
-    def play_album(self, alb_num, track_num):
-        self.view.change_colors('albs', self.alb.num, alb_num)
-        self.alb.num = alb_num
-        self.view.set_font('rec', util.font_size(len(self.art.played + self.alb.played), 'info'));
-        self.view.write_label('art', self.art.played)
-        self.alb.played = self.albs[self.alb.num]
-        self.view.write_label('alb', util.base(self.alb.played))
-        self.view.write_label("sel_art", "")
-        self.player.load_album(self.art.dirs[self.art.played], self.alb.played)
-        tracks = self.get_tracks
 
 
 
