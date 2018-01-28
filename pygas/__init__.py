@@ -1,17 +1,25 @@
 from .view import View
 from .app import App
 from .artists import Artists
-from .player import Player
+from .tracks import Tracks
 
 
-Artists.DIRS_FILE = '.mhdirs'
-App.LAST_FILE = '.mlast'
+LAST_FILE = '.rlast'
 
-App.NAME_MAX = {
+NAME_MAX = {
     "art": 20,
     "track": 40,
     "alb": 40
 }
+
+FONT_PARAMS = {
+    'info': [24, 12, 20, 5],
+    'items': [20, 12, 100, 40],
+    'albs': [20, 12, 40, 10],
+    'tracks': [18, 10, 100, 40]
+}
+
+Artists.DIRS_FILE = '.mhdirs'
 
 View.WIDTH = 1024
 View.HEIGHT = 572

@@ -1,11 +1,12 @@
 import gi
 from gi.repository import Gtk
 from gi.repository import Gdk
-from . import util
+from gi.repository import GLib
+
 from .view import View
-from .artists import Artists
-from .albums import Albums
 from .player import Player
+from .artists import Artists
+from . import util
 
 
 class App(Gtk.Application):
@@ -17,7 +18,7 @@ class App(Gtk.Application):
 
         self.key_map = {
             'Left': lambda: View.switch_to('player'),
-            'Right': App.switch_to_artists,
+            'Right': Artists.show,
             'Up': lambda: View.scroll('Up'),
             'Down': lambda: View.scroll('Down'),
             'F1': Artists.reload,
@@ -31,12 +32,17 @@ class App(Gtk.Application):
         View.search.entry.connect(
             "search-changed", lambda w: Artists.show(View.search.entry.get_text()))
 
-    @staticmethod
-    def do_activate():
-        Artists.show()
-        Gtk.timeout_add(60*1000, lambda: Player.update_position())
+    def do_activate(self):
+        from . import LAST_FILE
 
-    @staticmethod
+        Artists.show()
+        with util.open_file(LAST_FILE) as f:
+            art, alb, num, _ = [l.rstrip() for l in f.readlines()]
+
+        GLib.timeout_add(1000, lambda: Player.update_position())
+
+
+
     def on_destroy(self):
         Player.stop()
         Gtk.main_quit()
@@ -49,10 +55,7 @@ class App(Gtk.Application):
         else:
             return False
 
-    @staticmethod
-    def switch_to_artists():
-        View.switch_to('arts')
-        Artists.show()
+
 
 
 

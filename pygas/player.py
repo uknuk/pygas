@@ -2,9 +2,6 @@ import gi
 from gi.repository import Gst
 import math
 from .view import View
-from .albums import Albums
-from .tracks import Tracks
-from . import util
 
 
 class Player:
@@ -24,6 +21,9 @@ class Player:
 
     @classmethod
     def on_message(cls, _, msg):
+        from .albums import Albums
+        from .tracks import Tracks
+
         if msg.type == Gst.MessageType.TAG:
             rate = msg.parse_tag().get_uint('bitrate')[1]  # [1]
             if rate != cls.bitrate:
