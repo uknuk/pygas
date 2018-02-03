@@ -101,7 +101,8 @@ class View:
 
     @classmethod
     def write_label(cls, kind, txt):
-        return cls.write(cls.labels[kind], txt, cls.font_size[kind], cls.COLOR[kind])
+        font_size = cls.font_size.get(kind) or cls.font_size.info
+        return cls.write(cls.labels[kind], txt, font_size, cls.COLOR[kind])
 
     @classmethod
     def set_button(cls, kind, txt, n):
@@ -121,6 +122,11 @@ class View:
     def switch_to(cls, name):
         cls.stack.set_visible_child_name(name)
         cls.search.bar.set_search_mode(name == 'arts')
+
+    @classmethod
+    def scroll(cls, dir):
+        adjust = cls.scroll_win.vadjustment
+        adjust.value += adjust.page_size if dir == 'Down' else -adjust.page_size
 
     @classmethod
     def add_buttons(cls, kind, labels, fun):

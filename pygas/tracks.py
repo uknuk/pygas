@@ -9,7 +9,11 @@ class Tracks:
     num = 0
 
     @classmethod
-    def show(cls, alb_dir, num):
+    def show(cls, alb, num):
+        from .artists import Artists
+
+        Artists.selected()
+        alb_dir = path.join(Artists.played_directory(). alb)
         cls.names = [alb_dir] if path.isfile(alb_dir) else cls.load(alb_dir)
 
         View.set_font('tracks', cls.get_font(None, cls.names))
@@ -45,7 +49,7 @@ class Tracks:
     def set_info(track):
         art, alb = Tracks.get_payed()
         name_size = len(art + alb + track)
-        View.set_font('info', util.font_size(name_size, 'info'))
+        View.font_size.info = util.font_size(name_size, 'info')
         View.write_label('art', art)
         View.write_label('alb', alb)
         View.write_label('track', track)

@@ -18,22 +18,25 @@ class Albums:
         View.set_font('albs', cls.get_font([names, None]))
         View.add_buttons('albs', names, lambda a: cls.select(a))
 
-    # t_num - last played track
     @classmethod
-    def select(cls, a_num, t_num=0):
-        cls.app.artists.selected()
+    def select(cls, a_num):
         cls.chosen = cls.shown
-        cls.play(a_num, t_num)
+        cls.play_number(a_num, 0)
 
     @classmethod
-    def play(cls, a_num, t_num=0):
+    def play_name(cls, alb, t_num):
+        cls.chosen = alb
+        a_num = cls.chosen.index(alb)
+        cls.play_number(a_num, t_num)
+
+    @classmethod
+    def play_number(cls, a_num, t_num):
         from .tracks import Tracks
 
         View.change_colors('albs', cls.num, a_num)
         cls.num = a_num
         cls.played = cls.chosen[cls.num]
-        from .artists import Artists
-        Tracks.show(os.path.join(Artists.played_directory(), cls.played), t_num)
+        Tracks.show(cls.played, t_num)
 
     @classmethod
     def get_names(cls):

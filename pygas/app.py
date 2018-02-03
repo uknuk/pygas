@@ -41,6 +41,12 @@ class App(Gtk.Application):
 
         GLib.timeout_add(1000, lambda: Player.update_position())
 
+        if num is not None:
+            Artists.play(art, alb, num)
+
+
+
+
 
 
     def on_destroy(self):

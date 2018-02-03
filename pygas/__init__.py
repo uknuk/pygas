@@ -2,6 +2,7 @@ from .view import View
 from .app import App
 from .artists import Artists
 from .tracks import Tracks
+from dotmap import DotMap
 
 
 LAST_FILE = '.rlast'
@@ -37,14 +38,12 @@ View.COLOR = {
     }
 
 
-View.font_size = {
-    'art': 24,
-    'selArt': 22,
-    'alb': 24,
-    'track': 20,
+View.font_size = DotMap({
+    'info': 24,
+    'art': 22,
     'tracks': 16,
     'albs': 20,
     'vol': 14,
     'rate': 14,
-    'selArts': 24
-}
+    'arts': 24
+})
