@@ -21,16 +21,20 @@ class View:
         "arts": Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
     })
 
+    labels = DotMap({'tracks': [], 'albs': [], 'sel_arts': [], 'sel_art': Gtk.Label()})
+
+    pane_keys = ["song", "info", "sep1", "sel_art", "albs", "sep2", "tracks"]
     panes = DotMap({
             "song": Gtk.FlowBox(selection_mode=0),  # NONE
             'info': Gtk.Box(),
             'sep1': Gtk.HSeparator(),
+            'sel_art': labels.sel_art,
             'albs': Gtk.FlowBox(max_children_per_line=10),
             'sep2': Gtk.HSeparator(),
             'tracks': Gtk.FlowBox(max_children_per_line=15)
         })
 
-    labels = DotMap({'tracks': [], 'albs': [], 'sel_arts': [], 'sel_art': Gtk.Label()})
+
 
     slider = Gtk.ProgressBar(show_text=True)
 
@@ -60,11 +64,9 @@ class View:
         sel_arts = Gtk.FlowBox(max_children_per_line=10)
         cls.pack_start(cls.frames.arts, sel_arts)
         cls.pack_start(cls.frames.arts, cls.text)
-        
-        cls.panes.sel_art = cls.labels.sel_art
-
-        [cls.pack_start(cls.frames.player, cls.panes[p]) for p in cls.panes]
         cls.panes.sel_arts = sel_arts
+
+        [cls.pack_start(cls.frames.player, cls.panes[k]) for k in cls.pane_keys]
 
         for l in ['art', 'alb', 'track']:
             cls.labels[l] = Gtk.Label()
@@ -139,7 +141,7 @@ class View:
         n = 0
         for lbl in labels:
             btn = cls.set_button(kind, lbl, n)
-            btn.connect("clicked", lambda: fun(n))
+            btn.connect("clicked", fun, n)
             n += 1
             cls.panes[kind].add(btn)
 
@@ -162,3 +164,7 @@ class View:
 
         cls.switcher.set_stack(cls.stack)
         cls.header.add(cls.switcher)
+
+    @classmethod
+    def clicked(cls, btn):
+        return "clicked"

@@ -1,7 +1,12 @@
 import gi
 from gi.repository import Gst
 import math
+from datetime import datetime
 from .view import View
+
+
+def time(usecs):
+    return datetime.fromtimestamp(usecs/1e6).isoformat()[-5:-1]
 
 
 class Player:
@@ -14,7 +19,7 @@ class Player:
     @classmethod
     def init(cls):
         Gst.init(None)
-        cls.bin = Gst.ElementFactory.make("playbin", "play")
+        cls.bin = Gst.ElementFactory.make("playbin", "player")
         cls.bus = cls.bin.get_bus()
         cls.bus.add_signal_watch()
         cls.bus.connect('message', cls.on_message)
@@ -40,8 +45,8 @@ class Player:
     @classmethod
     def play(cls, track):
         cls.stop()
-        bin.set_property('uri', "file://{}".format(track))
-        bin.set_state(Gst.State.PLAYING)
+        cls.bin.set_property('uri', "file://{}".format(track))
+        cls.bin.set_state(Gst.State.PLAYING)
 
     @classmethod
     def update_position(cls):
@@ -51,9 +56,9 @@ class Player:
         if cls.duration == 0:
             cls.duration = cls.bin.query_duration(Gst.Format.TIME)[1]
 
-        pos = bin.query_position(Gst.Format.TIME)[1]
+        pos = cls.bin.query_position(Gst.Format.TIME)[1]
         View.slider.fraction = pos / cls.duration
-        View.slider.text = "{}/{}".format(cls.time(pos), cls.time(cls.duration))
+        View.slider.text = "{}/{}".format(time(pos), time(cls.duration))
         return True
 
     @classmethod

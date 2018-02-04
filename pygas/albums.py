@@ -7,6 +7,8 @@ class Albums:
     
     shown = []
     chosen = []
+    dirs = []
+    dir = None
     played = None
     num = 0
        
@@ -15,21 +17,23 @@ class Albums:
         from .tracks import Tracks
 
         albs = os.listdir(art_dir)
-        names = cls.get_names(albs)
-        cls.shown = list(map(lambda d: os.path.join(art_dir, d), albs))
-        View.font_size.albs = util.items_font_size([names, Tracks.names])
-        View.add_buttons('albs', names, lambda a: cls.select(a))
+        cls.shown = cls.get_names(albs)
+        cls.chosen = [os.path.join(art_dir, a) for a in albs]
+        View.font_size.albs = util.items_font_size([cls.shown, Tracks.shown])
+        View.add_buttons('albs', cls.shown, cls.clicked)
 
     @classmethod
-    def select(cls, a_num):
-        cls.chosen = cls.shown
-        cls.play_number(a_num, 0)
+    def clicked(cls, _, a_num):
+        cls.select(a_num)
 
     @classmethod
-    def play_name(cls, alb, t_num):
-        cls.chosen = alb
-        a_num = cls.chosen.index(alb)
+    def select(cls, a_num, t_num=0):
+        cls.dirs = cls.chosen
         cls.play_number(a_num, t_num)
+
+    @classmethod
+    def play_name(cls, alb_dir, t_num):
+        cls.select(cls.chosen.index(alb_dir), t_num)
 
     @classmethod
     def play_number(cls, a_num, t_num):
@@ -37,11 +41,12 @@ class Albums:
 
         View.change_colors('albs', cls.num, a_num)
         cls.num = a_num
-        cls.played = cls.chosen[cls.num]
-        Tracks.show(cls.played, t_num)
+        cls.played = cls.shown[cls.num]
+        cls.dir = cls.dirs[cls.num]
+        Tracks.show(cls.dir, t_num)
 
     @classmethod
-    def get_names(cls, albs):
+    def get_names(cls, alb_dirs):
         from . import NAME_MAX
-        return list(map(lambda name: util.cut(util.base(name), NAME_MAX["alb"]), albs))
+        return [util.cut_base(d, NAME_MAX["alb"]) for d in alb_dirs]
 

@@ -14,7 +14,7 @@ NAME_MAX = {
 }
 
 FONT_PARAMS = {
-    'info': [24, 12, 20, 5],
+    'info': [28, 16, 40, 5],
     'items': [20, 12, 100, 40],
     'albs': [20, 12, 40, 10],
     'tracks': [18, 10, 100, 40]
@@ -40,9 +40,7 @@ View.COLOR = {
 
 View.font_size = DotMap({
     'info': 24,
-    'art': 22,
     'sel_art': 22,
-    'track': 20,
     'tracks': 16,
     'albs': 20,
     'vol': 14,

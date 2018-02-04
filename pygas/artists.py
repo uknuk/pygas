@@ -68,9 +68,9 @@ class Artists:
     @classmethod
     def play(cls, art, alb, t_num):
         cls.chosen = art
-        Albums.show(cls.dirs[art])
-        Albums.play_name(alb, t_num)
-
+        art_dir = cls.dirs[art]
+        Albums.show(art_dir)
+        Albums.play_name(path.join(art_dir, alb), int(t_num))
 
     @classmethod
     def selected(cls):

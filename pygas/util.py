@@ -1,13 +1,15 @@
 from os import path, environ
 from functools import reduce
+import re
 
-def open_file(file):
-    return open(path.join(environ['HOME'], file))
+
+def open_file(file, mode='r'):
+    return open(path.join(environ['HOME'], file), mode)
 
 
 def cut(name, limit):
     s = ""
-    for w in name.split('_'):
+    for w in re.split('\s+|_|-', name):
         if len(s) + len(w) < limit:
             s += w + " "
         else:
@@ -17,6 +19,10 @@ def cut(name, limit):
 
 def base(file):
     return path.splitext(path.basename(file))[0]
+
+
+def cut_base(file, limit):
+    return cut(base(file), limit)
 
 
 def items_font_size(items):
