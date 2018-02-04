@@ -86,7 +86,7 @@ class View:
     def change_color(cls, kind, n, fro, to):
         lbl = cls.labels[kind][n]
         if lbl:
-            lbl.set_markup(lbl.label.replace(fro, to))
+            lbl.set_markup(lbl.get_label().replace(fro, to))
 
     @classmethod
     def change_colors(cls, kind, prev, next):
@@ -107,7 +107,12 @@ class View:
     @classmethod
     def set_button(cls, kind, txt, n):
         lbl = Gtk.Label()
-        cls.labels[kind][n] = lbl
+        # list of labels needed to change color by index
+        try:
+            cls.labels[kind][n] = lbl
+        except IndexError:
+            cls.labels[kind].append(lbl)
+
         cls.write(lbl, txt, cls.font_size[kind], cls.COLOR[kind])
         btn = Gtk.Button()
         btn.add(lbl)

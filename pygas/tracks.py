@@ -2,6 +2,7 @@ from os import path, listdir
 
 from .view import View
 from . import util
+from .artists import Artists
 
 
 class Tracks:
@@ -10,20 +11,20 @@ class Tracks:
 
     @classmethod
     def show(cls, alb, num):
-        from .artists import Artists
+        from .albums import Albums
 
         Artists.selected()
-        alb_dir = path.join(Artists.played_directory(). alb)
+        alb_dir = path.join(Artists.played_directory(), alb)
         cls.names = [alb_dir] if path.isfile(alb_dir) else cls.load(alb_dir)
 
-        View.set_font('tracks', cls.get_font(None, cls.names))
+        View.font_size.tracks = util.items_font_size([cls.names, Albums.names])
         View.add_buttons('tracks', cls.names, cls.play)
         cls.play(num)
 
     @staticmethod
     def load(alb):
         tracks = []
-        for entry in list.map(lambda f: path.join(alb, f), listdir(alb)):
+        for entry in list(map(lambda f: path.join(alb, f), listdir(alb))):
             if path.isfile(entry):
                 tracks.append(entry)  # add regular exp
             else:
@@ -57,7 +58,6 @@ class Tracks:
     @staticmethod
     def get_played():
         from .albums import Albums
-        from .artists import Artists
         return Artists.played, Albums.played
 
     @staticmethod

@@ -75,6 +75,10 @@ class Player:
         cls.bin.set_state(Gst.State.NULL)
         cls.duration = 0
 
+    @classmethod
+    def is_state(cls, state):
+        return cls.bin.get_state(1000)[1] == state
+
 
 
 

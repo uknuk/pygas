@@ -12,10 +12,12 @@ class Albums:
        
     @classmethod
     def show(cls, art_dir):
+        from .tracks import Tracks
+
         albs = os.listdir(art_dir)
-        names = cls.get_names
+        names = cls.get_names(albs)
         cls.shown = list(map(lambda d: os.path.join(art_dir, d), albs))
-        View.set_font('albs', cls.get_font([names, None]))
+        View.font_size.albs = util.items_font_size([names, Tracks.names])
         View.add_buttons('albs', names, lambda a: cls.select(a))
 
     @classmethod
@@ -39,6 +41,7 @@ class Albums:
         Tracks.show(cls.played, t_num)
 
     @classmethod
-    def get_names(cls):
-        return list(map(lambda name: util.cut(name, cls.app.NAME_MAX["alb"])))
+    def get_names(cls, albs):
+        from . import NAME_MAX
+        return list(map(lambda name: util.cut(util.base(name), NAME_MAX["alb"]), albs))
 

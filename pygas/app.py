@@ -44,11 +44,6 @@ class App(Gtk.Application):
         if num is not None:
             Artists.play(art, alb, num)
 
-
-
-
-
-
     def on_destroy(self):
         Player.stop()
         Gtk.main_quit()

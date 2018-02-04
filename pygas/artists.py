@@ -2,6 +2,7 @@ import os
 from os import path
 from . import util
 from .view import View
+from .albums import Albums
 
 
 class Artists:
@@ -35,8 +36,6 @@ class Artists:
 
     @classmethod
     def show(cls, entry=None):
-        from .albums import Albums
-
         names = cls.names
 
         if entry:
@@ -48,10 +47,10 @@ class Artists:
                 return
 
             cls.shown = names
-            View.font_size.arts = util.font_size(list.reduce(names, lambda s, n: s + len(n), 0), 'items')
-            View.add_buttons('arts', names, lambda n: cls.select(n))
+            View.font_size.sel_arts = util.font_size(list.reduce(names, lambda s, n: s + len(n), 0), 'items')
+            View.add_buttons('sel_arts', names, lambda n: cls.select(n))
         else:
-            View.clear('arts')
+            View.clear('sel_arts')
 
         text = '' if entry else '" | "'.join([cls.shorts[n] for n in names])
         View.switch_to('arts')
@@ -60,8 +59,6 @@ class Artists:
 
     @classmethod
     def select(cls, num):
-        from .albums import Albums
-
         cls.chosen = cls.shown[num]
         if cls.chosen != cls.played:
             cls.view.write_label("sel_art", cls.chosen + ":")
@@ -70,11 +67,10 @@ class Artists:
 
     @classmethod
     def play(cls, art, alb, t_num):
-        from .albums import Albums
-
         cls.chosen = art
         Albums.show(cls.dirs[art])
         Albums.play_name(alb, t_num)
+
 
     @classmethod
     def selected(cls):

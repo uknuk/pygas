@@ -41,9 +41,11 @@ View.COLOR = {
 View.font_size = DotMap({
     'info': 24,
     'art': 22,
+    'sel_art': 22,
+    'track': 20,
     'tracks': 16,
     'albs': 20,
     'vol': 14,
     'rate': 14,
-    'arts': 24
+    'sel_arts': 24
 })
