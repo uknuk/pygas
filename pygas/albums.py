@@ -21,6 +21,8 @@ class Albums:
         cls.chosen = [os.path.join(art_dir, a) for a in albs]
         View.font_size.albs = util.items_font_size([cls.shown, Tracks.shown])
         View.add_buttons('albs', cls.shown, cls.clicked)
+        View.switch_to('player')
+        View.win.show_all()
 
     @classmethod
     def clicked(cls, _, a_num):
@@ -41,8 +43,9 @@ class Albums:
 
         View.change_colors('albs', cls.num, a_num)
         cls.num = a_num
-        cls.played = cls.shown[cls.num]
+        # cls.played = cls.shown[cls.num]
         cls.dir = cls.dirs[cls.num]
+        cls.played = os.path.basename(cls.dir)
         Tracks.show(cls.dir, t_num)
 
     @classmethod

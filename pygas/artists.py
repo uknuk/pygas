@@ -1,8 +1,10 @@
 import os
 from os import path
+from functools import reduce
 from . import util
 from .view import View
 from .albums import Albums
+
 
 
 class Artists:
@@ -47,21 +49,25 @@ class Artists:
                 return
 
             cls.shown = names
-            View.font_size.sel_arts = util.font_size(list.reduce(names, lambda s, n: s + len(n), 0), 'items')
-            View.add_buttons('sel_arts', names, lambda n: cls.select(n))
+            View.font_size.sel_arts = util.font_size(reduce(lambda s, n: s + len(n), names, 0), 'items')
+            View.add_buttons('sel_arts', names, cls.clicked)
         else:
             View.clear('sel_arts')
 
-        text = '' if entry else '" | "'.join([cls.shorts[n] for n in names])
+        text = '' if entry else " | ".join([cls.shorts[n] for n in names])
         View.switch_to('arts')
         View.buffer.set_text(text, -1)
         View.win.show_all()
 
     @classmethod
+    def clicked(cls, _, num):
+        cls.select(num)
+
+    @classmethod
     def select(cls, num):
         cls.chosen = cls.shown[num]
         if cls.chosen != cls.played:
-            cls.view.write_label("sel_art", cls.chosen + ":")
+            View.write_label("sel_art", cls.chosen + ":")
 
         Albums.show(cls.dirs[cls.chosen])
 
