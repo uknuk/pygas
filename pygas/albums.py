@@ -22,7 +22,7 @@ class Albums:
         View.font_size.albs = util.items_font_size([cls.shown, Tracks.shown])
         View.add_buttons('albs', cls.shown, cls.clicked)
         View.switch_to('player')
-        View.win.show_all()
+
 
     @classmethod
     def clicked(cls, _, a_num):

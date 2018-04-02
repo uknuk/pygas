@@ -55,7 +55,6 @@ class Artists:
             View.clear('sel_arts')
 
         text = '' if entry else " | ".join([cls.shorts[n] for n in names])
-        View.switch_to('arts')
         View.buffer.set_text(text, -1)
         View.win.show_all()
 
@@ -77,6 +76,11 @@ class Artists:
         art_dir = cls.dirs[art]
         Albums.show(art_dir)
         Albums.play_name(path.join(art_dir, alb), int(t_num))
+
+    @classmethod
+    def restore(cls):
+        cls.chosen = cls.played
+        Albums.show(cls.dirs[cls.chosen])
 
     @classmethod
     def selected(cls):

@@ -18,12 +18,18 @@ class App(Gtk.Application):
 
         self.key_map = {
             'Left': lambda: View.switch_to('player'),
-            'Right': Artists.show,
+            'Right': App.show_artists,
             'Up': lambda: View.scroll('Up'),
             'Down': lambda: View.scroll('Down'),
             'F1': Artists.reload,
-            'space': Player.change_state
+            'space': Player.change_state,
+            'Escape': Artists.restore
         }
+
+    @classmethod
+    def show_artists(cls):
+        View.switch_to('arts')
+        Artists.show()
 
     def do_startup(self):
         Gtk.Application.do_startup(self)
