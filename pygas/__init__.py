@@ -5,15 +5,15 @@ from .tracks import Tracks
 from dotmap import DotMap
 
 
-LAST_FILE = '.rlast'
+Tracks.LAST_FILE = '.rlast'
 
-NAME_MAX = {
+View.NAME_MAX = {
     "art": 20,
     "track": 40,
     "alb": 40
 }
 
-FONT_PARAMS = {
+View.FONT_PARAMS = {
     'info': [28, 16, 40, 5],
     'items': [20, 12, 100, 40],
     'albs': [20, 12, 40, 10],

@@ -6,6 +6,7 @@ from gi.repository import GLib
 from .view import View
 from .player import Player
 from .artists import Artists
+from .tracks import Tracks
 from . import util
 
 
@@ -39,10 +40,10 @@ class App(Gtk.Application):
             "search-changed", lambda w: Artists.show(View.search.entry.get_text()))
 
     def do_activate(self):
-        from . import LAST_FILE
+        #from . import LAST_FILE
 
         Artists.show()
-        with util.open_file(LAST_FILE) as f:
+        with util.open_file(Tracks.LAST_FILE) as f:
             art, alb, num = [l.rstrip() for l in f.readlines()]
 
         GLib.timeout_add(1000, lambda: Player.update_position())

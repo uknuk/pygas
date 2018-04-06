@@ -3,6 +3,7 @@ from gi.repository import Gst
 import math
 from datetime import datetime
 from .view import View
+from .tracks import Tracks
 
 
 def time(usecs):
@@ -18,6 +19,7 @@ class Player:
 
     @classmethod
     def init(cls):
+        Tracks.play_track = cls.play
         Gst.init(None)
         cls.bin = Gst.ElementFactory.make("playbin", "player")
         cls.bus = cls.bin.get_bus()
@@ -26,9 +28,6 @@ class Player:
 
     @classmethod
     def on_message(cls, _, msg):
-        from .albums import Albums
-        from .tracks import Tracks
-
         if msg.type == Gst.MessageType.TAG:
             rate = msg.parse_tag().get_uint('bitrate')[1]  # [1]
             if rate != cls.bitrate:
@@ -36,11 +35,7 @@ class Player:
                 View.write_label('rate', "{} kbps".format(int(rate / 1e3)))
 
         if msg.type == Gst.MessageType.EOS:
-            next_num = cls.track_num + 1
-            if next_num == cls.tracks.length:
-                Albums.next()
-            else:
-                Tracks.play(next_num)
+            Tracks.next()
 
     @classmethod
     def play(cls, track):

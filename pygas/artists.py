@@ -4,7 +4,7 @@ from functools import reduce
 from . import util
 from .view import View
 from .albums import Albums
-
+from .tracks import Tracks
 
 
 class Artists:
@@ -18,7 +18,8 @@ class Artists:
 
     @classmethod
     def load(cls):
-        from . import NAME_MAX
+        Tracks.inject(cls, Albums.next)
+        Albums.show_tracks = Tracks.show
 
         with util.open_file(cls.DIRS_FILE) as f:
             roots = f.readlines().pop().split()
@@ -27,7 +28,7 @@ class Artists:
                 cls.names += names
                 for name in names:
                     cls.dirs[name] = path.join(r, name)
-                    cls.shorts[name] = util.cut(name, NAME_MAX['art'])
+                    cls.shorts[name] = util.cut(name, View.NAME_MAX['art'])
 
     @classmethod
     def reload(cls):
@@ -45,7 +46,7 @@ class Artists:
             names = list(filter(lambda a: a.replace('_', ' ').lower().startswith(sel), names))
 
             if len(names) == 1:
-                Albums.show(cls.dirs[names[0]])
+                Albums.show(cls.dirs[names[0]], Tracks.shown)
                 return
 
             cls.shown = names
@@ -74,7 +75,7 @@ class Artists:
     def play(cls, art, alb, t_num):
         cls.chosen = art
         art_dir = cls.dirs[art]
-        Albums.show(art_dir)
+        Albums.show(art_dir, Tracks.shown)
         Albums.play_name(path.join(art_dir, alb), int(t_num))
 
     @classmethod
@@ -90,5 +91,7 @@ class Artists:
     def played_directory(cls):
         return cls.dirs[cls.played]
 
-
+    @classmethod
+    def get_played(cls):
+        return cls.played, Albums.played
 

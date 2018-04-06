@@ -13,16 +13,13 @@ class Albums:
     num = 0
        
     @classmethod
-    def show(cls, art_dir):
-        from .tracks import Tracks
-
+    def show(cls, art_dir, shown_tracks):
         albs = os.listdir(art_dir)
         cls.shown = cls.get_names(albs)
         cls.chosen = [os.path.join(art_dir, a) for a in albs]
-        View.font_size.albs = util.items_font_size([cls.shown, Tracks.shown])
+        View.set_items_font('albs', [cls.shown, shown_tracks])
         View.add_buttons('albs', cls.shown, cls.clicked)
         View.switch_to('player')
-
 
     @classmethod
     def clicked(cls, _, a_num):
@@ -39,17 +36,17 @@ class Albums:
 
     @classmethod
     def play_number(cls, a_num, t_num):
-        from .tracks import Tracks
-
         View.change_colors('albs', cls.num, a_num)
         cls.num = a_num
-        # cls.played = cls.shown[cls.num]
         cls.dir = cls.dirs[cls.num]
         cls.played = os.path.basename(cls.dir)
-        Tracks.show(cls.dir, t_num)
+        cls.show_tracks(cls.dir, t_num, cls.shown)
 
     @classmethod
     def get_names(cls, alb_dirs):
-        from . import NAME_MAX
-        return [util.cut_base(d, NAME_MAX["alb"]) for d in alb_dirs]
+        return [util.cut_base(d, View.NAME_MAX["alb"]) for d in alb_dirs]
+
+    @classmethod
+    def next(cls):
+        print("not implemented")
 

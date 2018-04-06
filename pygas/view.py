@@ -1,6 +1,8 @@
 from dotmap import DotMap
 import gi
 from gi.repository import Gtk
+from . import util
+from functools import reduce
 
 gi.require_version('Gtk', '3.0')
 
@@ -33,8 +35,6 @@ class View:
             'sep2': Gtk.HSeparator(),
             'tracks': Gtk.FlowBox(max_children_per_line=15)
         })
-
-
 
     slider = Gtk.ProgressBar(show_text=True)
 
@@ -166,5 +166,17 @@ class View:
         cls.header.add(cls.switcher)
 
     @classmethod
-    def clicked(cls, btn):
-        return "clicked"
+    def set_items_font(cls, kind, items):
+        length = 0
+        for item in items:
+            length += reduce(lambda s, n: s + len(n), item, 0)
+        cls.font_size[kind] = cls.get_font('items', length)
+
+    @classmethod
+    def set_font(cls, kind, length):
+        cls.font_size[kind] = cls.get_font(kind, length)
+
+    @classmethod
+    def get_font(cls, kind, length):
+        fp = cls.FONT_PARAMS[kind]
+        return int(max(fp[0] - (length - fp[2]) / fp[3], fp[1]))

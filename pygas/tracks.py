@@ -2,7 +2,6 @@ from os import path, listdir
 
 from .view import View
 from . import util
-from .artists import Artists
 
 
 class Tracks:
@@ -11,16 +10,19 @@ class Tracks:
     num = 0
 
     @classmethod
-    def show(cls, alb, num):
-        from .albums import Albums
-        from . import NAME_MAX
+    def inject(cls, arts, next_album):
+        cls.arts = arts
+        cls.next_album = next_album
 
-        Artists.selected()
-        alb_dir = path.join(Artists.played_directory(), alb)
+    @classmethod
+    def show(cls, alb, num, shown_albums):
+
+        cls.arts.selected()
+        alb_dir = path.join(cls.arts.played_directory(), alb)
         cls.files = sorted([alb_dir] if path.isfile(alb_dir) else cls.load(alb_dir))
-        cls.shown = [util.cut_base(f, NAME_MAX["track"]) for f in cls.files]
+        cls.shown = [util.cut_base(f, View.NAME_MAX["track"]) for f in cls.files]
 
-        View.font_size.tracks = util.items_font_size([cls.shown, Albums.shown])
+        View.set_items_font('tracks', [cls.shown, shown_albums])
         View.add_buttons('tracks', cls.shown, cls.clicked)
         cls.play(num)
 
@@ -40,33 +42,33 @@ class Tracks:
 
     @classmethod
     def play(cls, num):
-        from .player import Player
-
         View.change_colors('tracks', cls.num, num)
         cls.num = num
-        track = cls.files[cls.num]
-        Tracks.set_info(path.basename(track))
-        Player.play(track)
-        Tracks.save()
+        track = cls.files[num]
+        cls.set_info(path.basename(track))
+        cls.play_track(track)
+        cls.save()
 
-    @staticmethod
-    def set_info(track):
-        art, alb = Tracks.get_played()
-        name_size = len(art + alb + track)
-        View.font_size.info = util.font_size(name_size, 'info')
+    @classmethod
+    def set_info(cls, track):
+        art, alb = cls.arts.get_played()
+        View.set_font('info', len(art + alb + track))
         View.write_label('art', art)
         View.write_label('alb', alb)
         View.write_label('track', track)
 
-    @staticmethod
-    def get_played():
-        from .albums import Albums
-        return Artists.played, Albums.played
-
     @classmethod
     def save(cls):
-        from . import LAST_FILE
-
-        art, alb = Tracks.get_played()
-        with util.open_file(LAST_FILE, 'w') as f:
+        art, alb = cls.arts.get_played()
+        with util.open_file(cls.LAST_FILE, 'w') as f:
             f.write("\n".join([art, alb, str(cls.num)]))
+
+    @classmethod
+    def next(cls):
+        next_num = cls.num + 1
+        if next_num == len(cls.files):
+            cls.next_album()
+        else:
+            cls.play(next_num)
+
+
