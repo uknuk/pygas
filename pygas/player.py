@@ -1,13 +1,8 @@
 import gi
 from gi.repository import Gst
 import math
-from datetime import datetime
 from .view import View
 from .tracks import Tracks
-
-
-def time(usecs):
-    return datetime.fromtimestamp(usecs/1e6).isoformat()[-5:-1]
 
 
 class Player:
@@ -51,9 +46,7 @@ class Player:
         if cls.duration == 0:
             cls.duration = cls.bin.query_duration(Gst.Format.TIME)[1]
 
-        pos = cls.bin.query_position(Gst.Format.TIME)[1]
-        View.slider.fraction = pos / cls.duration
-        View.slider.text = "{}/{}".format(time(pos), time(cls.duration))
+        View.update_slider(cls.bin.query_position(Gst.Format.TIME)[1], cls.duration)
         return True
 
     @classmethod

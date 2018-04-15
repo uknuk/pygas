@@ -1,10 +1,14 @@
 from dotmap import DotMap
 import gi
 from gi.repository import Gtk
-from . import util
+from datetime import datetime
 from functools import reduce
 
 gi.require_version('Gtk', '3.0')
+
+
+def time(usecs):
+    return datetime.fromtimestamp(usecs/1e9).isoformat()[-12:-7]  # min:sec
 
 
 class View:
@@ -180,3 +184,9 @@ class View:
     def get_font(cls, kind, length):
         fp = cls.FONT_PARAMS[kind]
         return int(max(fp[0] - (length - fp[2]) / fp[3], fp[1]))
+
+    @classmethod
+    def update_slider(cls, pos, duration):
+        cls.slider.set_fraction(pos / duration)
+        cls.slider.set_text("{}/{}".format(time(pos), time(duration)))
+

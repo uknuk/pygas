@@ -48,5 +48,6 @@ class Albums:
 
     @classmethod
     def next(cls):
-        print("not implemented")
+        a_num = cls.num + 1
+        cls.play_number(a_num, 0)
 

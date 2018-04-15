@@ -40,8 +40,6 @@ class App(Gtk.Application):
             "search-changed", lambda w: Artists.show(View.search.entry.get_text()))
 
     def do_activate(self):
-        #from . import LAST_FILE
-
         Artists.show()
         with util.open_file(Tracks.LAST_FILE) as f:
             art, alb, num = [l.rstrip() for l in f.readlines()]
@@ -62,8 +60,6 @@ class App(Gtk.Application):
             return True
         else:
             return False
-
-
 
 
 
