@@ -22,7 +22,7 @@ class Artists:
         Albums.show_tracks = Tracks.show
 
         with util.open_file(cls.DIRS_FILE) as f:
-            roots = f.readlines().pop().split()
+            roots = f.readlines()[0].split()
             for r in roots:
                 names = os.listdir(r)
                 cls.names += names
@@ -46,6 +46,7 @@ class Artists:
             names = list(filter(lambda a: a.replace('_', ' ').lower().startswith(sel), names))
 
             if len(names) == 1:
+                cls.select(names[0])
                 Albums.show(cls.dirs[names[0]], Tracks.shown)
                 return
 
@@ -61,11 +62,11 @@ class Artists:
 
     @classmethod
     def clicked(cls, _, num):
-        cls.select(num)
+        cls.select(cls.shown[num])
 
     @classmethod
-    def select(cls, num):
-        cls.chosen = cls.shown[num]
+    def select(cls, name):
+        cls.chosen = name
         if cls.chosen != cls.played:
             View.write_label("sel_art", cls.chosen + ":")
 
@@ -94,4 +95,3 @@ class Artists:
     @classmethod
     def get_played(cls):
         return cls.played, Albums.played
-

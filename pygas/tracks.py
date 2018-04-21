@@ -1,5 +1,5 @@
 from os import path, listdir
-
+import re
 from .view import View
 from . import util
 
@@ -28,9 +28,12 @@ class Tracks:
     @staticmethod
     def load(alb):
         tracks = []
+        #exp = re.compile('\.mp3$|\.mp4a$|\.mpc$|\.ogg$') doesn't work
+        exp = re.compile('.*mp3|.*mp4a|.*mpc|.*ogg')
         for entry in list(map(lambda f: path.join(alb, f), listdir(alb))):
             if path.isfile(entry):
-                tracks.append(entry)  # add regular exp
+                if exp.match(entry):
+                    tracks.append(entry)
             else:
                 tracks += Tracks.load(entry)
         return tracks
@@ -70,5 +73,3 @@ class Tracks:
             cls.next_album()
         else:
             cls.play(next_num)
-
-
