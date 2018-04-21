@@ -69,7 +69,7 @@ class Artists:
         if cls.chosen != cls.played:
             View.write_label("sel_art", cls.chosen + ":")
 
-        Albums.show(cls.dirs[cls.chosen])
+        Albums.show(cls.dirs[cls.chosen], Tracks.shown)
 
     @classmethod
     def play(cls, art, alb, t_num):

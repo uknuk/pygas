@@ -1,4 +1,5 @@
 import os
+import re
 from . import util
 from .view import View
 
@@ -14,7 +15,7 @@ class Albums:
        
     @classmethod
     def show(cls, art_dir, shown_tracks):
-        albs = os.listdir(art_dir)
+        albs = sorted(os.listdir(art_dir), key=lambda d: cls.convert(d))
         cls.shown = cls.get_names(albs)
         cls.chosen = [os.path.join(art_dir, a) for a in albs]
         View.set_items_font('albs', [cls.shown, shown_tracks])
@@ -50,4 +51,23 @@ class Albums:
     def next(cls):
         a_num = cls.num + 1
         cls.play_number(a_num, 0)
+
+    @staticmethod
+    def convert(name):
+        if name[:2] == 'M0':
+            return name.replace('M0', '200')
+
+        if name[:2] == 'Op':
+            return name.replace('Op', '')
+
+        if re.compile('^\d{2}[\s+|_|-]').match(name):
+            return '20' + name if int(name[:2]) < 30 else '19' + name
+
+        return name
+
+
+
+
+
+
 
