@@ -22,7 +22,7 @@ class Artists:
         Albums.show_tracks = Tracks.show
 
         with util.open_file(cls.DIRS_FILE) as f:
-            roots = f.readlines().pop().split()
+            roots = f.readlines()[0].split()
             for r in roots:
                 names = os.listdir(r)
                 cls.names += names
@@ -94,4 +94,3 @@ class Artists:
     @classmethod
     def get_played(cls):
         return cls.played, Albums.played
-
