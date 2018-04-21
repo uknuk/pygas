@@ -23,6 +23,8 @@ class App(Gtk.Application):
             'Up': lambda: View.scroll('Up'),
             'Down': lambda: View.scroll('Down'),
             'F1': Artists.reload,
+            'F11': lambda: Player.volume(-1),
+            'F12': lambda: Player.volume(1),
             'space': Player.change_state,
             'Escape': Artists.restore
         }

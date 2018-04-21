@@ -58,10 +58,13 @@ class Player:
 
     @classmethod
     def volume(cls, delta):
-        db = math.log10(cls.bin.volume + delta)
-        cls.bin.volume = min(math.pow(10, db/10), cls.bin.volume)
-        View.switch_to('player')
-        View.write_label('vol', "{} db".format(int(db)))
+        vol = cls.bin.get_property('volume')
+        db = 10*math.log10(vol) + delta
+        vol = math.pow(10, db/10)
+        if vol < 10:
+            cls.bin.set_property('volume', vol)
+            View.switch_to('player')
+            View.write_label('vol', "{} db".format(int(db)))
 
     @classmethod
     def stop(cls):
