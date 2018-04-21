@@ -16,7 +16,6 @@ class Tracks:
 
     @classmethod
     def show(cls, alb, num, shown_albums):
-
         cls.arts.selected()
         alb_dir = path.join(cls.arts.played_directory(), alb)
         cls.files = sorted([alb_dir] if path.isfile(alb_dir) else cls.load(alb_dir))
@@ -43,10 +42,11 @@ class Tracks:
     @classmethod
     def play(cls, num):
         View.change_colors('tracks', cls.num, num)
+        View.scroll('Up')
         cls.num = num
         track = cls.files[num]
         cls.set_info(path.basename(track))
-        cls.play_track(track)
+        cls.play_track(track)  # Player.play
         cls.save()
 
     @classmethod

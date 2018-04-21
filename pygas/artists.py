@@ -50,7 +50,7 @@ class Artists:
                 return
 
             cls.shown = names
-            View.font_size.sel_arts = util.font_size(reduce(lambda s, n: s + len(n), names, 0), 'items')
+            View.set_items_font('sel_arts', names)
             View.add_buttons('sel_arts', names, cls.clicked)
         else:
             View.clear('sel_arts')
