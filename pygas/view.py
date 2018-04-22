@@ -20,7 +20,7 @@ class View:
                                         default_width=cls.WIDTH,
                                         window_position=Gtk.WindowPosition.CENTER)
 
-        cls.header = Gtk.HeaderBar(title="Python Gnome Audio Streamer")
+        cls.header = Gtk.HeaderBar()
         cls.header.set_show_close_button(True)
         cls.win.set_titlebar(cls.header)
 
@@ -36,7 +36,8 @@ class View:
             "player": Gtk.Box(orientation=Gtk.Orientation.VERTICAL),
             "arts": Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         })
-        sel_arts = Gtk.FlowBox(max_children_per_line=10)
+        sel_arts = Gtk.FlowBox()
+        h = sel_arts.get_homogeneous()
         cls.pack_start(cls.frames.arts, sel_arts)
         cls.pack_start(cls.frames.arts, cls.text)
 
@@ -46,16 +47,16 @@ class View:
             'info': Gtk.Box(),
             'sep1': Gtk.HSeparator(),
             'sel_art': cls.labels.sel_art,
-            'albs': Gtk.FlowBox(max_children_per_line=10),
+            'albs': Gtk.FlowBox(min_children_per_line=3),
             'sep2': Gtk.HSeparator(),
-            'tracks': Gtk.FlowBox(max_children_per_line=15)
+            'tracks': Gtk.FlowBox(min_children_per_line=3)
         })
         cls.panes.sel_arts = sel_arts
 
         pane_keys = ["song", "info", "sep1", "sel_art", "albs", "sep2", "tracks"]
         [cls.pack_start(cls.frames.player, cls.panes[k]) for k in pane_keys]
 
-        for l in ['art', 'alb', 'track']:
+        for l in ['alb', 'track']:
             cls.labels[l] = Gtk.Label()
             cls.panes.song.add(cls.labels[l])
 
@@ -68,10 +69,9 @@ class View:
         
         cls.make_stack_switcher()
         cls.make_search()
+        cls.make_scrolled()
 
-        cls.scroll_win = Gtk.ScrolledWindow()
-        cls.scroll_win.add(cls.stack)
-        cls.win.add(cls.scroll_win)
+
 
     @classmethod
     def change_color(cls, kind, n, fro, to):
@@ -160,6 +160,13 @@ class View:
         cls.header.add(cls.switcher)
 
     @classmethod
+    def make_scrolled(cls):
+        cls.scroll_win = Gtk.ScrolledWindow()
+        cls.scroll_win.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+        cls.scroll_win.add(cls.stack)
+        cls.win.add(cls.scroll_win)
+
+    @classmethod
     def set_items_font(cls, kind, items):
         length = 0
         for item in items:
@@ -173,7 +180,8 @@ class View:
     @classmethod
     def get_font(cls, kind, length):
         fp = cls.FONT_PARAMS[kind]
-        return int(max(fp[0] - (length - fp[2]) / fp[3], fp[1]))
+        diff = max(length - fp[2], 0)
+        return int(max(fp[0] - diff / fp[3], fp[1]))
 
     @classmethod
     def update_slider(cls, pos, duration):

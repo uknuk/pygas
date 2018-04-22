@@ -28,7 +28,7 @@ class Tracks:
     @staticmethod
     def load(alb):
         tracks = []
-        #exp = re.compile('\.mp3$|\.mp4a$|\.mpc$|\.ogg$') doesn't work
+        # exp = re.compile('\.mp3$|\.mp4a$|\.mpc$|\.ogg$') doesn't work
         exp = re.compile('.*mp3|.*mp4a|.*mpc|.*ogg')
         for entry in list(map(lambda f: path.join(alb, f), listdir(alb))):
             if path.isfile(entry):
@@ -55,8 +55,8 @@ class Tracks:
     @classmethod
     def set_info(cls, track):
         art, alb = cls.arts.get_played()
-        View.set_font('info', len(art + alb + track))
-        View.write_label('art', art)
+        View.set_font('info', len(alb + track))
+        View.header.set_title(art)
         View.write_label('alb', alb)
         View.write_label('track', track)
 

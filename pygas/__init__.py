@@ -14,7 +14,7 @@ View.NAME_MAX = {
 }
 
 View.FONT_PARAMS = {
-    'info': [28, 16, 40, 5],
+    'info': [32, 20, 40, 5],
     'items': [20, 12, 100, 40],
     'albs': [20, 12, 40, 10],
     'tracks': [18, 10, 100, 40]
@@ -26,7 +26,6 @@ View.WIDTH = 1024
 View.HEIGHT = 572
 
 View.COLOR = {
-    'art': 'blue',
     'sel_art': 'blue',
     'sel_arts': 'blue',
     'alb': 'green',
