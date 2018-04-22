@@ -47,9 +47,9 @@ class View:
             'info': Gtk.Box(),
             'sep1': Gtk.HSeparator(),
             'sel_art': cls.labels.sel_art,
-            'albs': Gtk.FlowBox(min_children_per_line=3),
+            'albs': Gtk.FlowBox(),
             'sep2': Gtk.HSeparator(),
-            'tracks': Gtk.FlowBox(min_children_per_line=3)
+            'tracks': Gtk.FlowBox()
         })
         cls.panes.sel_arts = sel_arts
 
@@ -80,11 +80,11 @@ class View:
             lbl.set_markup(lbl.get_label().replace(fro, to))
 
     @classmethod
-    def change_colors(cls, kind, prev, next):
-        if prev != next:
+    def change_colors(cls, kind, prev, curr):
+        if prev != curr:
             cls.change_color(kind, prev, "'red'", "'{}'".format(cls.COLOR[kind]))
 
-        cls.change_color(kind, next, "'{}'".format(cls.COLOR[kind]), "'red'")
+        cls.change_color(kind, curr, "'{}'".format(cls.COLOR[kind]), "'red'")
 
     @staticmethod
     def pack_start(container, item, flag=False):
@@ -96,7 +96,7 @@ class View:
         return cls.write(cls.labels[kind], txt, font_size, cls.COLOR[kind])
 
     @classmethod
-    def set_button(cls, kind, txt, n):
+    def set_button(cls, kind, txt, n, active=False):
         lbl = Gtk.Label()
         # list of labels needed to change color by index
         try:
@@ -104,7 +104,8 @@ class View:
         except IndexError:
             cls.labels[kind].append(lbl)
 
-        cls.write(lbl, txt, cls.font_size[kind], cls.COLOR[kind])
+        color = 'red' if active else cls.COLOR[kind]
+        cls.write(lbl, txt, cls.font_size[kind], color)
         btn = Gtk.Button()
         btn.add(lbl)
         return btn
@@ -127,11 +128,11 @@ class View:
         cls.scroll_win.set_vadjustment(adjust)
 
     @classmethod
-    def add_buttons(cls, kind, labels, fun):
+    def add_buttons(cls, kind, labels, fun, played=None):
         cls.clear(kind)
         n = 0
         for lbl in labels:
-            btn = cls.set_button(kind, lbl, n)
+            btn = cls.set_button(kind, lbl, n, n == played)
             btn.connect("clicked", fun, n)
             n += 1
             cls.panes[kind].add(btn)

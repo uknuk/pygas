@@ -7,6 +7,7 @@ from .view import View
 from .player import Player
 from .artists import Artists
 from .tracks import Tracks
+from .albums import Albums
 from . import util
 
 
@@ -23,6 +24,8 @@ class App(Gtk.Application):
             'Up': lambda: View.scroll('Up'),
             'Down': lambda: View.scroll('Down'),
             'F1': Artists.reload,
+            'F5': lambda: self.change_font(-1),
+            'F6': lambda: self.change_font(1),
             'F11': lambda: Player.volume(-1),
             'F12': lambda: Player.volume(1),
             'space': Player.change_state,
@@ -62,3 +65,10 @@ class App(Gtk.Application):
             return True
         else:
             return False
+
+    @staticmethod
+    def change_font(delta):
+        View.font_size.tracks += delta
+        View.font_size.albs += delta
+        View.add_buttons('albs', Albums.shown, Albums.clicked, Albums.num)
+        View.add_buttons('tracks', Tracks.shown, Tracks.clicked, Tracks.num)

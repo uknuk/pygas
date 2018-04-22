@@ -20,6 +20,7 @@ class Tracks:
         alb_dir = path.join(cls.arts.played_directory(), alb)
         cls.files = sorted([alb_dir] if path.isfile(alb_dir) else cls.load(alb_dir))
         cls.shown = [util.cut_base(f, View.NAME_MAX["track"]) for f in cls.files]
+        cls.arts.restore()
 
         View.set_items_font('tracks', [cls.shown, shown_albums])
         View.add_buttons('tracks', cls.shown, cls.clicked)

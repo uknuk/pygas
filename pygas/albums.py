@@ -14,12 +14,13 @@ class Albums:
     num = 0
        
     @classmethod
-    def show(cls, art_dir, shown_tracks):
+    def show(cls, art_dir, shown_tracks, new=True):
         albs = sorted(os.listdir(art_dir), key=lambda d: cls.convert(d))
         cls.shown = cls.get_names(albs)
         cls.chosen = [os.path.join(art_dir, a) for a in albs]
         View.set_items_font('albs', [cls.shown, shown_tracks])
-        View.add_buttons('albs', cls.shown, cls.clicked)
+        played = None if new else cls.num
+        View.add_buttons('albs', cls.shown, cls.clicked, played)
         View.switch_to('player')
 
     @classmethod

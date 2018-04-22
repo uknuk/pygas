@@ -81,8 +81,9 @@ class Artists:
 
     @classmethod
     def restore(cls):
+        View.write_label("sel_art", '')
         cls.chosen = cls.played
-        Albums.show(cls.dirs[cls.chosen])
+        Albums.show(cls.dirs[cls.chosen], Tracks.shown, False)
 
     @classmethod
     def selected(cls):
