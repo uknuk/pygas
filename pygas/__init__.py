@@ -9,13 +9,13 @@ Tracks.LAST_FILE = '.rlast'
 
 View.NAME_MAX = {
     "art": 20,
-    "track": 40,
-    "alb": 40
+    "track": 30,
+    "alb": 30
 }
 
 View.FONT_PARAMS = {
-    'info': [32, 20, 40, 5],
-    'items': [20, 12, 100, 40],
+    'info': [40, 20, 40, 5],
+    'items': [20, 12, 100, 200],
     'albs': [20, 12, 40, 10],
     'tracks': [18, 10, 100, 40]
 }

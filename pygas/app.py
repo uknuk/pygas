@@ -70,5 +70,6 @@ class App(Gtk.Application):
     def change_font(delta):
         View.font_size.tracks += delta
         View.font_size.albs += delta
+        print(View.font_size.tracks, View.font_size.albs)
         View.add_buttons('albs', Albums.shown, Albums.clicked, Albums.num)
         View.add_buttons('tracks', Tracks.shown, Tracks.clicked, Tracks.num)

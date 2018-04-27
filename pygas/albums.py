@@ -5,14 +5,14 @@ from .view import View
 
 
 class Albums:
-    
+
     shown = []
     chosen = []
     dirs = []
     dir = None
     played = None
     num = 0
-       
+
     @classmethod
     def show(cls, art_dir, shown_tracks, new=True):
         albs = sorted(os.listdir(art_dir), key=lambda d: cls.convert(d))
@@ -39,7 +39,7 @@ class Albums:
     @classmethod
     def play_number(cls, a_num, t_num):
         View.change_colors('albs', cls.num, a_num)
-        cls.num = a_num
+        cls.num = a_num if a_num < len(cls.dirs) else 0
         cls.dir = cls.dirs[cls.num]
         cls.played = os.path.basename(cls.dir)
         cls.show_tracks(cls.dir, t_num, cls.shown)
@@ -65,10 +65,3 @@ class Albums:
             return '20' + name if int(name[:2]) < 30 else '19' + name
 
         return name
-
-
-
-
-
-
-

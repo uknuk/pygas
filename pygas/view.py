@@ -66,7 +66,7 @@ class View:
 
         cls.slider = Gtk.ProgressBar(show_text=True)
         cls.pack_start(cls.panes.info, cls.slider, True)
-        
+
         cls.make_stack_switcher()
         cls.make_search()
         cls.make_scrolled()
@@ -182,10 +182,12 @@ class View:
     def get_font(cls, kind, length):
         fp = cls.FONT_PARAMS[kind]
         diff = max(length - fp[2], 0)
-        return int(max(fp[0] - diff / fp[3], fp[1]))
+        fs = int(max(fp[0] - diff / fp[3], fp[1]))
+        if kind == 'items':
+            print(length, fs)
+        return fs
 
     @classmethod
     def update_slider(cls, pos, duration):
         cls.slider.set_fraction(pos / duration)
         cls.slider.set_text("{}/{}".format(time(pos), time(duration)))
-
