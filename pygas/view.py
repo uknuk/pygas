@@ -53,7 +53,7 @@ class View:
         })
         cls.panes.sel_arts = sel_arts
 
-        pane_keys = ["song", "info", "sep1", "sel_art", "albs", "sep2", "tracks"]
+        pane_keys = ["song", "info", "sel_art", "albs", "tracks"]
         [cls.pack_start(cls.frames.player, cls.panes[k]) for k in pane_keys]
 
         for l in ['alb', 'track']:
@@ -183,8 +183,7 @@ class View:
         fp = cls.FONT_PARAMS[kind]
         diff = max(length - fp[2], 0)
         fs = int(max(fp[0] - diff / fp[3], fp[1]))
-        if kind == 'items':
-            print(length, fs)
+        print(kind, length, fs)
         return fs
 
     @classmethod

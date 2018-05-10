@@ -46,7 +46,9 @@ class Player:
         if cls.duration == 0:
             cls.duration = cls.bin.query_duration(Gst.Format.TIME)[1]
 
-        View.update_slider(cls.bin.query_position(Gst.Format.TIME)[1], cls.duration)
+        if cls.duration != 0:
+            View.update_slider(cls.bin.query_position(Gst.Format.TIME)[1], cls.duration)
+
         return True
 
     @classmethod

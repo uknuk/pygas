@@ -30,6 +30,8 @@ class Artists:
                     cls.dirs[name] = path.join(r, name)
                     cls.shorts[name] = util.cut(name, View.NAME_MAX['art'])
 
+        cls.names = sorted(cls.names)
+
     @classmethod
     def reload(cls):
         cls.names = []

@@ -51,7 +51,8 @@ class Albums:
     @classmethod
     def next(cls):
         a_num = cls.num + 1
-        cls.play_number(a_num, 0)
+        if a_num < len(cls.dirs):
+            cls.play_number(a_num, 0)
 
     @staticmethod
     def convert(name):

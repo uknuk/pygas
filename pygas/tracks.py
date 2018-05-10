@@ -56,7 +56,7 @@ class Tracks:
     @classmethod
     def set_info(cls, track):
         art, alb = cls.arts.get_played()
-        View.set_font('info', len(alb + track))
+        View.set_font('info', max(len(alb), len(track)))
         View.header.set_title(art)
         View.write_label('alb', alb)
         View.write_label('track', track)

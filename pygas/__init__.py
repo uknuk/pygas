@@ -14,7 +14,7 @@ View.NAME_MAX = {
 }
 
 View.FONT_PARAMS = {
-    'info': [40, 20, 40, 5],
+    'info': [40, 10, 20, 2],
     'items': [20, 12, 100, 200],
     'albs': [20, 12, 40, 10],
     'tracks': [18, 10, 100, 40]
