@@ -183,7 +183,7 @@ class View:
         fp = cls.FONT_PARAMS[kind]
         diff = max(length - fp[2], 0)
         fs = int(max(fp[0] - diff / fp[3], fp[1]))
-        print(kind, length, fs)
+        #print(kind, length, fs)
         return fs
 
     @classmethod

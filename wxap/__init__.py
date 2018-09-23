@@ -1,32 +1,32 @@
+from dotmap import DotMap
 from .app import App
 from .view import View
+from .artists import Artists
 
 View.WIDTH = 1024
 View.HEIGHT = 572
 
-# obtained from fonts.py
-View.FontSizes = {
-    10: (12, 17),
-    11: (13, 18),
-    12: (14, 19),
-    13: (15, 22),
-    14: (17, 23),
-    15: (18, 24),
-    16: (19, 26),
-    17: (21, 28),
-    18: (22, 29),
-    19: (23, 30),
-    20: (24, 32),
-    21: (25, 33),
-    22: (26, 35),
-    23: (28, 37),
-    24: (29, 38),
-    25: (31, 39),
-    26: (32, 42),
-    27: (32, 43),
-    28: (33, 44),
-    29: (35, 46),
-    30: (36, 48),
-    31: (37, 49),
-    32: (39, 51),
-]
+View.COLOR = {
+    'sel_art': 'blue',
+    'sel_arts': 'blue',
+    'alb': 'green',
+    'track': 'blue',
+    'tracks': 'blue',
+    'albs': 'green',
+    'vol': 'red',
+    'rate': 'blue'
+    }
+
+View.FONT_SIZE = DotMap({
+    'vol': 14,
+    'rate': 14,
+    'sel_arts': 16
+})
+
+View.NAME_MAX = {
+    "art": 20,
+    "track": 30,
+    "alb": 30
+}
+
+Artists.DIRS_FILE = '.mhdirs'
