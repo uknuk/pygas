@@ -2,4 +2,4 @@
 
 from wxap import App
 
-App().MainLoop()
+App(0).MainLoop()
