@@ -6,7 +6,7 @@ class App(wx.App):
 
     def OnInit(self):
         self.keymap = {
-            wx.WXK_F1: lambda: View.notebook.SetSelection(0),
+            wx.WXK_F1: lambda: View.panel.notebook.SetSelection(0),
             wx.WXK_F2: lambda: App.show_artists()
         }
 
@@ -20,7 +20,7 @@ class App(wx.App):
     @classmethod
     def show_artists(cls):
         Artists.show()
-        View.notebook.SetSelection(1)
+        View.panel.notebook.SetSelection(1)
         View.win.Show(True)
 
     def keyhandler(self, key):
