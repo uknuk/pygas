@@ -38,7 +38,7 @@ class Panel:
         })
 
         self.pack_start(frames.arts, self.panes.sel_arts)
-        self.pack_start(frames.arts, self.text)
+        self.pack_start(frames.arts, self.panes.arts)
 
         pane_keys = ["song", "info", "sel_art", "albs", "tracks"]
         [self.pack_start(frames.player, self.panes[k]) for k in pane_keys]
@@ -88,11 +88,32 @@ class Panel:
         btn.add(lbl)
         self.panes[kind].add(btn)
 
-    # def add_buttons(kind, labels, fun, played=None):
-    #     self.clear(kind)
-    #     self.desc.set_size(int(round(int(12 * Pango.SCALE)))
-    #     n = 0
-    #     for lbl in labels
+    def add_buttons(self, kind, names, fun, played=None):
+        self.clear(kind)
+        self.desc.set_size(int(round(int(12 * Pango.SCALE))))
+        n = 0
+        row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+        length = 0
+        for name in names:
+            lbl = Gtk.Label()
+            lbl.modify_font(self.desc)
+            lbl.set_markup(
+                 "<span color='blue'>{}</span>".format(name.replace('&', '&amp;')))
+            size = lbl.get_layout().get_pixel_size()
+            btn = Gtk.Button()
+            btn.connect("clicked", fun, n)
+            n = n + 1
+            btn.set_size_request(size[0], size[1])
+            btn.add(lbl)
+            align = Gtk.Alignment()
+            align.add(btn)
+            length = length + size[0] + 20
+            if length > 1024:
+                self.pack_start(self.panes.arts, row)
+                row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+                length = size[0]
+
+            self.pack_start(row, align)
 
     @staticmethod
     def write(lbl, txt, size, color):
@@ -122,8 +143,7 @@ class Panel:
                 size = self.layout.get_pixel_size()
                 if size[0] < 1024:
                     break
-            #context = self.labels[key].get_pango_context()
-            #context.set_font_description(self.desc)
+
             self.labels[key].modify_font(self.desc)
             self.labels[key].set_markup(
                 "<span color='{}'>{}</span>".format(Panel.COLOR[key], val.replace('&', '&amp;')))

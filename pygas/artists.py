@@ -41,6 +41,7 @@ class Artists:
     @classmethod
     def show(cls, entry=None):
         names = cls.names
+        cls.shown = names
 
         if entry:
             sel = entry[0:-1] if entry[-1] == '§' else entry
@@ -55,10 +56,10 @@ class Artists:
             View.set_items_font('sel_arts', names)
             View.add_buttons('sel_arts', names, cls.clicked)
         else:
-            View.panel.clear('sel_arts')
+            View.panel.add_buttons('arts', [cls.shorts[n] for n in names], cls.clicked)
 
-        text = '' if entry else " | ".join([cls.shorts[n] for n in names])
-        View.panel.buffer.set_text(text, -1)
+        # text = '' if entry else " | ".join([cls.shorts[n] for n in names])
+        # View.panel.buffer.set_text(text, -1)
         View.win.show_all()
 
     @classmethod
