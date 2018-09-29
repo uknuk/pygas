@@ -66,7 +66,7 @@ class Player:
         if vol < 10:
             cls.bin.set_property('volume', vol)
             View.switch_to('player')
-            View.write_label('vol', "{} db".format(int(db)))
+            View.panel.write_label('vol', "{} db".format(int(db)))
 
     @classmethod
     def stop(cls):

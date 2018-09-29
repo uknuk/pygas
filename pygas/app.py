@@ -17,7 +17,6 @@ class App(Gtk.Application):
     def __init__(self):
         super().__init__()
         Player.init()
-        Artists.load()
 
         self.key_map = {
             'Left': lambda: View.switch_to('player'),
@@ -41,12 +40,13 @@ class App(Gtk.Application):
     def do_startup(self):
         Gtk.Application.do_startup(self)
         View.init(self)
+        Artists.load()
         View.win.connect('key_press_event', self.on_key_press)
         View.search.entry.connect(
             "search-changed", lambda w: Artists.show(View.search.entry.get_text()))
 
     def do_activate(self):
-        Artists.show()
+        #Artists.show()
         try:
             with util.open_file(Tracks.LAST_FILE) as f:
                 art, alb, num = [l.rstrip() for l in f.readlines()[:3]]

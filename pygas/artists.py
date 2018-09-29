@@ -30,6 +30,8 @@ class Artists:
                     cls.shorts[name] = util.cut(name, View.NAME_MAX['art'])
 
         cls.names = sorted(cls.names)
+        cls.shown = cls.names
+        View.panel.add_artists([cls.shorts[n] for n in cls.names], cls.clicked)
 
     @classmethod
     def reload(cls):
@@ -41,9 +43,10 @@ class Artists:
     @classmethod
     def show(cls, entry=None):
         names = cls.names
-        cls.shown = names
 
         if entry:
+            # print(View.panel.panes.arts.get_children())
+            View.panel.show_artists(False)
             sel = entry[0:-1] if entry[-1] == '§' else entry
             names = list(filter(lambda a: a.replace('_', ' ').lower().startswith(sel), names))
 
@@ -56,7 +59,8 @@ class Artists:
             View.set_items_font('sel_arts', names)
             View.add_buttons('sel_arts', names, cls.clicked)
         else:
-            View.panel.add_buttons('arts', [cls.shorts[n] for n in names], cls.clicked)
+            cls.shown = names
+            View.panel.show_artists(True)
 
         # text = '' if entry else " | ".join([cls.shorts[n] for n in names])
         # View.panel.buffer.set_text(text, -1)

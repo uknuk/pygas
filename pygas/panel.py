@@ -88,9 +88,9 @@ class Panel:
         btn.add(lbl)
         self.panes[kind].add(btn)
 
-    def add_buttons(self, kind, names, fun, played=None):
-        self.clear(kind)
+    def add_artists(self, names, fun):
         self.desc.set_size(int(round(int(12 * Pango.SCALE))))
+        self.arts = []
         n = 0
         row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
         length = 0
@@ -105,6 +105,7 @@ class Panel:
             n = n + 1
             btn.set_size_request(size[0], size[1])
             btn.add(lbl)
+            self.arts.append(btn)
             align = Gtk.Alignment()
             align.add(btn)
             length = length + size[0] + 20
@@ -114,6 +115,11 @@ class Panel:
                 length = size[0]
 
             self.pack_start(row, align)
+
+    def show_artists(self, visible):
+        if visible:
+            self.clear('sel_arts')
+        [btn.set_sensitive(visible) for btn in self.arts]
 
     @staticmethod
     def write(lbl, txt, size, color):
