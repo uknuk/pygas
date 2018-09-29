@@ -20,7 +20,7 @@ View.COLOR = {
 View.FONT_SIZE = DotMap({
     'vol': 14,
     'rate': 14,
-    'sel_arts': 12
+    'sel_arts': 11
 })
 
 View.NAME_MAX = {

@@ -10,7 +10,6 @@ from .tracks import Tracks
 from .albums import Albums
 from . import util
 
-
 class App(Gtk.Application):
 
     def __init__(self):
@@ -46,8 +45,11 @@ class App(Gtk.Application):
 
     def do_activate(self):
         Artists.show()
-        with util.open_file(Tracks.LAST_FILE) as f:
-            art, alb, num = [l.rstrip() for l in f.readlines()[:3]]
+        try:
+            with util.open_file(Tracks.LAST_FILE) as f:
+                art, alb, num = [l.rstrip() for l in f.readlines()[:3]]
+        except FileNotFoundError:
+            num = None
 
         GLib.timeout_add(1000, lambda: Player.update_position())
 

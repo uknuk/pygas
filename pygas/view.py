@@ -1,15 +1,12 @@
 from dotmap import DotMap
 import gi
+gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 from datetime import datetime
 from functools import reduce
 
-gi.require_version('Gtk', '3.0')
-
-
 def time(usecs):
     return datetime.fromtimestamp(usecs/1e9).isoformat()[-12:-7]  # min:sec
-
 
 class View:
 
@@ -37,7 +34,6 @@ class View:
             "arts": Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         })
         sel_arts = Gtk.FlowBox()
-        h = sel_arts.get_homogeneous()
         cls.pack_start(cls.frames.arts, sel_arts)
         cls.pack_start(cls.frames.arts, cls.text)
 
@@ -70,8 +66,6 @@ class View:
         cls.make_stack_switcher()
         cls.make_search()
         cls.make_scrolled()
-
-
 
     @classmethod
     def change_color(cls, kind, n, fro, to):
@@ -135,6 +129,9 @@ class View:
             btn = cls.set_button(kind, lbl, n, n == played)
             btn.connect("clicked", fun, n)
             n += 1
+            # btn.set_size_request(30, 15)
+            # hbox = Gtk.HBox()
+            # hbox.pack_start(btn, False, False, 1);
             cls.panes[kind].add(btn)
 
         cls.win.show_all()

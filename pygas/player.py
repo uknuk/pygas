@@ -1,9 +1,9 @@
 import gi
+gi.require_version('Gst', '1.0')
 from gi.repository import Gst
 import math
 from .view import View
 from .tracks import Tracks
-
 
 class Player:
 
@@ -76,10 +76,3 @@ class Player:
     @classmethod
     def is_state(cls, state):
         return cls.bin.get_state(1000)[1] == state
-
-
-
-
-
-
-
