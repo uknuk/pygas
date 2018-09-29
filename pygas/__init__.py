@@ -2,8 +2,8 @@ from .view import View
 from .app import App
 from .artists import Artists
 from .tracks import Tracks
+from .panel import Panel
 from dotmap import DotMap
-
 
 Tracks.LAST_FILE = '.rlast'
 
@@ -13,7 +13,7 @@ View.NAME_MAX = {
     "alb": 30
 }
 
-View.FONT_PARAMS = {
+Panel.FONT_PARAMS = {
     'info': [40, 10, 20, 2],
     'items': [20, 12, 100, 200],
     'albs': [20, 12, 40, 10],
@@ -25,7 +25,7 @@ Artists.DIRS_FILE = '.mhdirs'
 View.WIDTH = 1024
 View.HEIGHT = 572
 
-View.COLOR = {
+Panel.COLOR = {
     'sel_art': 'blue',
     'sel_arts': 'blue',
     'alb': 'green',
@@ -36,8 +36,7 @@ View.COLOR = {
     'rate': 'blue'
     }
 
-
-View.font_size = DotMap({
+Panel.font_size = DotMap({
     'info': 24,
     'sel_art': 20,
     'tracks': 16,

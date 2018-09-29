@@ -27,7 +27,7 @@ class Player:
             rate = msg.parse_tag().get_uint('bitrate')[1]  # [1]
             if rate != cls.bitrate:
                 cls.bitrate = rate
-                View.write_label('rate', "{} kbps".format(int(rate / 1e3)))
+                View.panel.write_label('rate', "{} kbps".format(int(rate / 1e3)))
 
         if msg.type == Gst.MessageType.EOS:
             Tracks.next()
@@ -47,7 +47,7 @@ class Player:
             cls.duration = cls.bin.query_duration(Gst.Format.TIME)[1]
 
         if cls.duration != 0:
-            View.update_slider(cls.bin.query_position(Gst.Format.TIME)[1], cls.duration)
+            View.panel.update_slider(cls.bin.query_position(Gst.Format.TIME)[1], cls.duration)
 
         return True
 

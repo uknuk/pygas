@@ -1,4 +1,5 @@
 import gi
+
 from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GLib
@@ -8,6 +9,7 @@ from .player import Player
 from .artists import Artists
 from .tracks import Tracks
 from .albums import Albums
+from .panel import Panel
 from . import util
 
 class App(Gtk.Application):
@@ -70,8 +72,8 @@ class App(Gtk.Application):
 
     @staticmethod
     def change_font(delta):
-        View.font_size.tracks += delta
-        View.font_size.albs += delta
-        print(View.font_size.tracks, View.font_size.albs)
+        Panel.font_size.tracks += delta
+        Panel.font_size.albs += delta
+        #print(View.font_size.tracks, View.font_size.albs)
         View.add_buttons('albs', Albums.shown, Albums.clicked, Albums.num)
         View.add_buttons('tracks', Tracks.shown, Tracks.clicked, Tracks.num)

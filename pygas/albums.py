@@ -3,7 +3,6 @@ import re
 from . import util
 from .view import View
 
-
 class Albums:
 
     shown = []
@@ -38,7 +37,7 @@ class Albums:
 
     @classmethod
     def play_number(cls, a_num, t_num):
-        View.change_colors('albs', cls.num, a_num)
+        View.panel.change_colors('albs', cls.num, a_num)
         cls.num = a_num if a_num < len(cls.dirs) else 0
         cls.dir = cls.dirs[cls.num]
         cls.played = os.path.basename(cls.dir)

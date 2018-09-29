@@ -3,7 +3,6 @@ import re
 from .view import View
 from . import util
 
-
 class Tracks:
     files = []
     shown = []
@@ -45,7 +44,7 @@ class Tracks:
 
     @classmethod
     def play(cls, num):
-        View.change_colors('tracks', cls.num, num)
+        View.panel.change_colors('tracks', cls.num, num)
         View.scroll('Up')
         cls.num = num
         track = cls.files[num]
@@ -56,10 +55,8 @@ class Tracks:
     @classmethod
     def set_info(cls, track):
         art, alb = cls.arts.get_played()
-        View.set_font('info', max(len(alb), len(track)))
-        View.header.set_title(art)
-        View.write_label('alb', alb)
-        View.write_label('track', track)
+        View.panel.set_info({'alb': alb, 'track': track})
+        View.set_artist(art)
 
     @classmethod
     def save(cls):

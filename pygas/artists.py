@@ -6,7 +6,6 @@ from .view import View
 from .albums import Albums
 from .tracks import Tracks
 
-
 class Artists:
 
     names = []
@@ -56,10 +55,10 @@ class Artists:
             View.set_items_font('sel_arts', names)
             View.add_buttons('sel_arts', names, cls.clicked)
         else:
-            View.clear('sel_arts')
+            View.panel.clear('sel_arts')
 
         text = '' if entry else " | ".join([cls.shorts[n] for n in names])
-        View.buffer.set_text(text, -1)
+        View.panel.buffer.set_text(text, -1)
         View.win.show_all()
 
     @classmethod
@@ -70,7 +69,7 @@ class Artists:
     def select(cls, name):
         cls.chosen = name
         if cls.chosen != cls.played:
-            View.write_label("sel_art", cls.chosen + ":")
+            View.panel.write_label("sel_art", cls.chosen + ":")
 
         Albums.show(cls.dirs[cls.chosen], Tracks.shown)
 
@@ -83,7 +82,7 @@ class Artists:
 
     @classmethod
     def restore(cls):
-        View.write_label("sel_art", '')
+        View.panel.write_label("sel_art", '')
         cls.chosen = cls.played
         Albums.show(cls.dirs[cls.chosen], Tracks.shown, False)
 
