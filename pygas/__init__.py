@@ -43,5 +43,6 @@ Panel.font_size = DotMap({
     'albs': 20,
     'vol': 14,
     'rate': 14,
-    'sel_arts': 24
+    'sel_arts': 28,
+    'arts': 11
 })

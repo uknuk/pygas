@@ -33,7 +33,7 @@ class Panel:
             'albs': Gtk.FlowBox(),
             'sep2': Gtk.HSeparator(),
             'tracks': Gtk.FlowBox(),
-            'sel_arts': Gtk.FlowBox(),
+            'sel_arts': Gtk.Box(orientation=Gtk.Orientation.VERTICAL),
             'arts': Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         })
 
@@ -88,33 +88,40 @@ class Panel:
         btn.add(lbl)
         self.panes[kind].add(btn)
 
-    def add_artists(self, names, fun):
-        self.desc.set_size(int(round(int(12 * Pango.SCALE))))
-        self.arts = []
+    def add_artists(self, kind, names, fun):
+        self.desc.set_size(int(round(int(Panel.font_size[kind] * Pango.SCALE))))
+        if kind == 'arts':
+            self.arts = []
+        else:
+            self.clear(kind)
+
         n = 0
         row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
         length = 0
         for name in names:
             lbl = Gtk.Label()
             lbl.modify_font(self.desc)
-            lbl.set_markup(
-                 "<span color='blue'>{}</span>".format(name.replace('&', '&amp;')))
+            lbl.set_markup(name.replace('&', '&amp;'))
             size = lbl.get_layout().get_pixel_size()
             btn = Gtk.Button()
             btn.connect("clicked", fun, n)
             n = n + 1
             btn.set_size_request(size[0], size[1])
             btn.add(lbl)
-            self.arts.append(btn)
+            if kind == 'arts':
+                self.arts.append(btn)
+
             align = Gtk.Alignment()
             align.add(btn)
             length = length + size[0] + 20
             if length > 1024:
-                self.pack_start(self.panes.arts, row)
+                self.pack_start(self.panes[kind], row)
                 row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
                 length = size[0]
 
             self.pack_start(row, align)
+
+        self.pack_start(self.panes[kind], row)
 
     def show_artists(self, visible):
         if visible:
