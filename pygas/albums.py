@@ -17,12 +17,12 @@ class Albums:
         albs = sorted(os.listdir(art_dir), key=lambda d: cls.convert(d))
         cls.shown = cls.get_names(albs)
         cls.chosen = [os.path.join(art_dir, a) for a in albs]
-        #View.set_items_font('albs', [cls.shown, shown_tracks])
         played = None if new else cls.num
-        #View.add_buttons('albs', cls.shown, cls.clicked, played)
         View.panel.select_font(cls.shown + shown_tracks)
         View.panel.add_buttons('albs', cls.shown, cls.clicked, played)
         View.switch_to('player')
+        if new and len(cls.shown) == 1:
+            cls.select(0)
 
     @classmethod
     def clicked(cls, _, a_num):
@@ -44,6 +44,7 @@ class Albums:
         cls.dir = cls.dirs[cls.num]
         cls.played = os.path.basename(cls.dir)
         cls.show_tracks(cls.dir, t_num, cls.shown)
+        # =Tracks.show, set in Artists.load
 
     @classmethod
     def get_names(cls, alb_dirs):

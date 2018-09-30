@@ -74,6 +74,7 @@ class Artists:
         if cls.chosen != cls.played:
             View.panel.write_label("sel_art", cls.chosen + ":")
 
+        View.scroll("Up")
         Albums.show(cls.dirs[cls.chosen], Tracks.shown)
 
     @classmethod

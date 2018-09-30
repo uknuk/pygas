@@ -4,6 +4,7 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 from functools import reduce
 from .panel import Panel
+from . import util
 
 class View:
 
@@ -19,7 +20,7 @@ class View:
             "arts": Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         })
 
-        cls.panel = Panel(cls.win, frames)
+        cls.panel = Panel(cls.win, frames, cls.WIDTH, cls.HEIGHT)
 
         cls.stack = Gtk.Stack()
         for n in ['player', 'arts']:
@@ -67,17 +68,17 @@ class View:
             n += 1
         cls.win.show_all()
 
-    @classmethod
-    def set_items_font(cls, kind, items):
-        length = 0
-        for item in items:
-            length += reduce(lambda s, n: s + len(n), item, 0)
-            Panel.font_size[kind] = Panel.get_font('items', length)
+    # @classmethod
+    # def set_items_font(cls, kind, items):
+    #     length = 0
+    #     for item in items:
+    #         length += reduce(lambda s, n: s + len(n), item, 0)
+    #         Panel.font_size[kind] = Panel.get_font('items', length)
 
-    @classmethod
-    def set_font(cls, kind, length):
-        Panel.font_size[kind] = Panel.get_font(kind, length)
+    # @classmethod
+    # def set_font(cls, kind, length):
+    #     Panel.font_size[kind] = Panel.get_font(kind, length)
 
     @classmethod
     def set_artist(cls, art):
-        cls.title.set_markup("<span color='blue' font='24'>{}</span>".format(art))
+        cls.title.set_markup(util.set_span(art, Panel.COLOR['art'], Panel.font_size.art))

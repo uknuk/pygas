@@ -1,26 +1,30 @@
 from dotmap import DotMap
 from datetime import datetime
-from functools import reduce
+#from functools import reduce
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 gi.require_version('Pango', '1.0')
 from gi.repository import Pango
+from . import util
 
 def time(usecs):
     return datetime.fromtimestamp(usecs/1e9).isoformat()[-12:-7]  # min:sec
 
 class Panel:
 
-    def __init__(self, win, frames):
+    def __init__(self, win, frames, width, height):
         self.win = win
-        self.css = Gtk.CssProvider()
-        self.css.load_from_data(
-            bytes("GtkTextView { font-size: 16px; font-weight: bold; color: #a00; }".encode()))
+        self.max_width = width
+        self.max_height = height/2
 
-        self.buffer = Gtk.TextBuffer()
-        self.text = Gtk.TextView(buffer=self.buffer, wrap_mode=Gtk.WrapMode.WORD)
-        self.text.get_style_context().add_provider(self.css, 0)
+        # self.css = Gtk.CssProvider()
+        # self.css.load_from_data(
+        #     bytes("GtkTextView { font-size: 16px; font-weight: bold; color: #a00; }".encode()))
+
+        # self.buffer = Gtk.TextBuffer()
+        # self.text = Gtk.TextView(buffer=self.buffer, wrap_mode=Gtk.WrapMode.WORD)
+        # self.text.get_style_context().add_provider(self.css, 0)
 
         self.desc = Pango.FontDescription(string = 'Ubuntu')
         self.layout = Gtk.Label().get_layout()
@@ -72,8 +76,8 @@ class Panel:
         container.pack_start(item, flag, flag, 1)
 
     def write_label(self, kind, txt):
-        font_size = self.font_size.get(kind) or self.font_size.info
-        return self.write(self.labels[kind], txt, font_size, Panel.COLOR[kind])
+        # font_size = self.font_size[kind] # or self.font_size.info
+        self.write(self.labels[kind], txt, self.font_size[kind], Panel.COLOR[kind])
 
     def add_button(self, kind, txt, fun, n, active=False):
         lbl = Gtk.Label()
@@ -100,9 +104,7 @@ class Panel:
 
         color = 'red' if active else Panel.COLOR[kind]
         lbl.modify_font(self.desc)
-        lbl.set_markup(
-            "<span color='{}'>{}</span>".format(color, txt.replace('&', '&amp;')))
-
+        lbl.set_markup(util.set_span(txt, color))
         size = lbl.get_layout().get_pixel_size()
         btn = Gtk.Button()
         btn.connect("clicked", fun, n)
@@ -127,9 +129,9 @@ class Panel:
         length = 0
         for name in names:
             (align, width) = self.set_button(kind, name, fun, n, n == played)
-            n = n + 1
-            length = length + width + 20
-            if length > 1024:
+            n += 1
+            length += width + 20
+            if length >= self.max_width:
                 self.pack_start(self.panes[kind], row)
                 row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
                 length = width
@@ -140,39 +142,40 @@ class Panel:
         self.win.show_all()
 
     def select_font(self, items):
-        txt = " ".join(items)
-        for i in range (40,10,-1):
-            # proceed by item
-            self.desc.set_size(int(round(int(i) * Pango.SCALE)))
+        for s in range(*Panel.FONT_RANGE):
+            self.desc.set_size(int(round(int(s) * Pango.SCALE)))
             self.layout.set_font_description(self.desc)
-            self.layout.set_markup(txt)
-            size = self.layout.get_pixel_size()
-            print(size)
-            if (size[0] + len(items)*20)/1024*size[1] < 362:
+            width = height = 0
+            for item in items:
+                self.layout.set_markup(item.replace('&', '&amp;'))
+                size = self.layout.get_pixel_size()
+                width += size[0] + Panel.WIDTH_MARGIN
+                if width > self.max_width:
+                    height += size[1] + Panel.HEIGHT_MARGIN
+                    if height >= self.max_height:
+                        break
+                    else:
+                        width = size[0]
+
+            if height < self.max_height:
                 break
 
-        print(i)
-        Panel.font_size.tracks = Panel.font_size.albs = i
+        Panel.font_size.tracks = Panel.font_size.albs = s
 
     def show_artists(self, visible):
         if visible:
             self.clear('sel_arts')
         [btn.set_sensitive(visible) for btn in self.arts]
 
-    @staticmethod
-    def write(lbl, txt, size, color):
-        return lbl.set_markup(
-            "<span color='{}' font='{}'>{}</span>".format(color, size, txt.replace('&', '&amp;')))
-
     def clear(self, kind):
         [child.destroy() for child in self.panes[kind].get_children()]
 
-    @classmethod
-    def get_font(cls, kind, length):
-        fp = Panel.FONT_PARAMS[kind]
-        diff = max(length - fp[2], 0)
-        fs = int(max(fp[0] - diff / fp[3], fp[1]))
-        return fs
+    # @classmethod
+    # def get_font(cls, kind, length):
+    #     fp = Panel.FONT_PARAMS[kind]
+    #     diff = max(length - fp[2], 0)
+    #     fs = int(max(fp[0] - diff / fp[3], fp[1]))
+    #     return fs
 
     def update_slider(self, pos, duration):
         self.slider.set_fraction(pos / duration)
@@ -189,5 +192,8 @@ class Panel:
                     break
 
             self.labels[key].modify_font(self.desc)
-            self.labels[key].set_markup(
-                "<span color='{}'>{}</span>".format(Panel.COLOR[key], val.replace('&', '&amp;')))
+            self.labels[key].set_markup(util.set_span(val, Panel.COLOR[key]))
+
+    @staticmethod
+    def write(lbl, txt, size, color):
+        lbl.set_markup(util.set_span(txt, color, size))
