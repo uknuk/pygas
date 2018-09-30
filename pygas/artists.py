@@ -31,7 +31,7 @@ class Artists:
 
         cls.names = sorted(cls.names)
         cls.shown = cls.names
-        View.panel.add_artists('arts', [cls.shorts[n] for n in cls.names], cls.clicked)
+        View.panel.add_buttons('arts', [cls.shorts[n] for n in cls.names], cls.clicked)
 
     @classmethod
     def reload(cls):
@@ -55,7 +55,7 @@ class Artists:
                 return
 
             cls.shown = names
-            View.panel.add_artists('sel_arts', names, cls.clicked)
+            View.panel.add_buttons('sel_arts', names, cls.clicked)
         else:
             cls.shown = names
             View.panel.show_artists(True)

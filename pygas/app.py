@@ -46,7 +46,6 @@ class App(Gtk.Application):
             "search-changed", lambda w: Artists.show(View.search.entry.get_text()))
 
     def do_activate(self):
-        #Artists.show()
         try:
             with util.open_file(Tracks.LAST_FILE) as f:
                 art, alb, num = [l.rstrip() for l in f.readlines()[:3]]
@@ -74,6 +73,5 @@ class App(Gtk.Application):
     def change_font(delta):
         Panel.font_size.tracks += delta
         Panel.font_size.albs += delta
-        #print(View.font_size.tracks, View.font_size.albs)
         View.add_buttons('albs', Albums.shown, Albums.clicked, Albums.num)
         View.add_buttons('tracks', Tracks.shown, Tracks.clicked, Tracks.num)

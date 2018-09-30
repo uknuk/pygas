@@ -27,7 +27,8 @@ View.HEIGHT = 572
 
 Panel.COLOR = {
     'sel_art': 'blue',
-    'sel_arts': 'blue',
+    'sel_arts': 'black',
+    'arts': 'black',
     'alb': 'green',
     'track': 'blue',
     'tracks': 'blue',

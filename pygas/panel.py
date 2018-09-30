@@ -1,5 +1,6 @@
 from dotmap import DotMap
 from datetime import datetime
+from functools import reduce
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
@@ -11,7 +12,8 @@ def time(usecs):
 
 class Panel:
 
-    def __init__(self, frames):
+    def __init__(self, win, frames):
+        self.win = win
         self.css = Gtk.CssProvider()
         self.css.load_from_data(
             bytes("GtkTextView { font-size: 16px; font-weight: bold; color: #a00; }".encode()))
@@ -30,9 +32,9 @@ class Panel:
             'info': Gtk.Box(),
             'sep1': Gtk.HSeparator(),
             'sel_art': self.labels.sel_art,
-            'albs': Gtk.FlowBox(),
+            'albs': Gtk.Box(orientation=Gtk.Orientation.VERTICAL),
             'sep2': Gtk.HSeparator(),
-            'tracks': Gtk.FlowBox(),
+            'tracks': Gtk.Box(orientation=Gtk.Orientation.VERTICAL),
             'sel_arts': Gtk.Box(orientation=Gtk.Orientation.VERTICAL),
             'arts': Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         })
@@ -88,7 +90,32 @@ class Panel:
         btn.add(lbl)
         self.panes[kind].add(btn)
 
-    def add_artists(self, kind, names, fun):
+    def set_button(self, kind, txt, fun, n, active=False):
+        lbl = Gtk.Label()
+        # list of labels needed to change color by index
+        try:
+            self.labels[kind][n] = lbl
+        except IndexError:
+            self.labels[kind].append(lbl)
+
+        color = 'red' if active else Panel.COLOR[kind]
+        lbl.modify_font(self.desc)
+        lbl.set_markup(
+            "<span color='{}'>{}</span>".format(color, txt.replace('&', '&amp;')))
+
+        size = lbl.get_layout().get_pixel_size()
+        btn = Gtk.Button()
+        btn.connect("clicked", fun, n)
+        btn.add(lbl)
+        if kind == 'arts':
+            self.arts.append(btn)
+
+        btn.set_size_request(size[0], size[1])
+        align = Gtk.Alignment()
+        align.add(btn)
+        return align, size[0]
+
+    def add_buttons(self, kind, names, fun, played=None):
         self.desc.set_size(int(round(int(Panel.font_size[kind] * Pango.SCALE))))
         if kind == 'arts':
             self.arts = []
@@ -99,29 +126,33 @@ class Panel:
         row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
         length = 0
         for name in names:
-            lbl = Gtk.Label()
-            lbl.modify_font(self.desc)
-            lbl.set_markup(name.replace('&', '&amp;'))
-            size = lbl.get_layout().get_pixel_size()
-            btn = Gtk.Button()
-            btn.connect("clicked", fun, n)
+            (align, width) = self.set_button(kind, name, fun, n, n == played)
             n = n + 1
-            btn.set_size_request(size[0], size[1])
-            btn.add(lbl)
-            if kind == 'arts':
-                self.arts.append(btn)
-
-            align = Gtk.Alignment()
-            align.add(btn)
-            length = length + size[0] + 20
+            length = length + width + 20
             if length > 1024:
                 self.pack_start(self.panes[kind], row)
                 row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
-                length = size[0]
+                length = width
 
             self.pack_start(row, align)
 
         self.pack_start(self.panes[kind], row)
+        self.win.show_all()
+
+    def select_font(self, items):
+        txt = " ".join(items)
+        for i in range (40,10,-1):
+            # proceed by item
+            self.desc.set_size(int(round(int(i) * Pango.SCALE)))
+            self.layout.set_font_description(self.desc)
+            self.layout.set_markup(txt)
+            size = self.layout.get_pixel_size()
+            print(size)
+            if (size[0] + len(items)*20)/1024*size[1] < 362:
+                break
+
+        print(i)
+        Panel.font_size.tracks = Panel.font_size.albs = i
 
     def show_artists(self, visible):
         if visible:

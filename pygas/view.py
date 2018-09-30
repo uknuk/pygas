@@ -19,7 +19,7 @@ class View:
             "arts": Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         })
 
-        cls.panel = Panel(frames)
+        cls.panel = Panel(cls.win, frames)
 
         cls.stack = Gtk.Stack()
         for n in ['player', 'arts']:

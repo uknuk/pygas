@@ -21,8 +21,10 @@ class Tracks:
         cls.shown = [util.cut_base(f, View.NAME_MAX["track"]) for f in cls.files]
         cls.arts.restore()
 
-        View.set_items_font('tracks', [cls.shown, shown_albums])
-        View.add_buttons('tracks', cls.shown, cls.clicked)
+        #View.set_items_font('tracks', [cls.shown, shown_albums])
+        View.panel.select_font(cls.shown + shown_albums)
+        #View.add_buttons('tracks', cls.shown, cls.clicked)
+        View.panel.add_buttons('tracks', cls.shown, cls.clicked)
         cls.play(num)
 
     @staticmethod
