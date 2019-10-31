@@ -63,8 +63,9 @@ class Tracks:
     @classmethod
     def save(cls):
         art, alb = cls.arts.get_played()
+        track = path.splitext(path.basename(cls.files[cls.num]))[0] + "\n"
         with util.open_file(cls.LAST_FILE, 'w') as f:
-            f.write("\n".join([art, alb, str(cls.num)]))
+            f.write("\n".join([art, alb, str(cls.num), track]))
 
     @classmethod
     def next(cls):

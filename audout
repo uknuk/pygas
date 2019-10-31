@@ -1,0 +1,9 @@
+#!/bin/bash
+
+declare -a arr
+mapfile -t arr < "$HOME/.rlast"
+echo ${arr[0]}
+echo ${arr[1]}
+echo ${arr[3]}
+
+
