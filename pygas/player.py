@@ -3,76 +3,65 @@ gi.require_version('Gst', '1.0')
 from gi.repository import Gst
 import math
 from .view import View
-from .tracks import Tracks
+
 
 class Player:
-
-    duration = 0
-    bitrate = 0
-    bin = None
-    bus = None
-
-    @classmethod
-    def init(cls):
-        Tracks.play_track = cls.play
+    def __init__(self, tracks):
+        self.duration = 0
+        self.bitrate = 0
         Gst.init(None)
-        cls.bin = Gst.ElementFactory.make("playbin", "player")
-        cls.bus = cls.bin.get_bus()
-        cls.bus.add_signal_watch()
-        cls.bus.connect('message', cls.on_message)
-
-    @classmethod
-    def on_message(cls, _, msg):
+        self.bin = Gst.ElementFactory.make("playbin", "player")
+        self.bus = self.bin.get_bus()
+        self.bus.add_signal_watch()
+        self.bus.connect('message', self.on_message)
+        tracks.play_track = self.play
+        self.tracks = tracks
+        
+    def on_message(self, _, msg):
         if msg.type == Gst.MessageType.TAG:
             rate = msg.parse_tag().get_uint('bitrate')[1]  # [1]
-            if rate != cls.bitrate:
-                cls.bitrate = rate
+            if rate != self.bitrate:
+                self.bitrate = rate
                 View.panel.write_label('rate', "{} kbps".format(int(rate / 1e3)))
 
         if msg.type == Gst.MessageType.EOS:
-            Tracks.next()
+            self.tracks.next()
 
-    @classmethod
-    def play(cls, track):
-        cls.stop()
-        cls.bin.set_property('uri', "file://{}".format(track))
-        cls.bin.set_state(Gst.State.PLAYING)
+    def play(self, track):
+        self.stop()
+        self.bin.set_property('uri', "file://{}".format(track))
+        self.bin.set_state(Gst.State.PLAYING)
 
-    @classmethod
-    def update_position(cls):
-        if not cls.is_state(Gst.State.PLAYING):
+    def update_position(self):
+        if not self.is_state(Gst.State.PLAYING):
             return True
 
-        if cls.duration == 0:
-            cls.duration = cls.bin.query_duration(Gst.Format.TIME)[1]
+        if self.duration == 0:
+            self.duration = self.bin.query_duration(Gst.Format.TIME)[1]
 
-        if cls.duration != 0:
-            View.panel.update_slider(cls.bin.query_position(Gst.Format.TIME)[1], cls.duration)
+        if self.duration != 0:
+            View.panel.update_slider(self.bin.query_position(Gst.Format.TIME)[1], self.duration)
 
         return True
 
-    @classmethod
-    def change_state(cls):
-        if cls.is_state(Gst.State.PLAYING):
-            cls.bin.set_state(Gst.State.PAUSED)
-        elif cls.is_state(Gst.State.PAUSED):
-            cls.bin.set_state(Gst.State.PLAYING)
+    def change_state(self):
+        if self.is_state(Gst.State.PLAYING):
+            self.bin.set_state(Gst.State.PAUSED)
+        elif self.is_state(Gst.State.PAUSED):
+            self.bin.set_state(Gst.State.PLAYING)
 
-    @classmethod
-    def volume(cls, delta):
-        vol = cls.bin.get_property('volume')
+    def volume(self, delta):
+        vol = self.bin.get_property('volume')
         db = 10*math.log10(vol) + delta
         vol = math.pow(10, db/10)
         if vol < 10:
-            cls.bin.set_property('volume', vol)
+            self.bin.set_property('volume', vol)
             View.switch_to('player')
             View.panel.write_label('vol', "{} db".format(int(db)))
 
-    @classmethod
-    def stop(cls):
-        cls.bin.set_state(Gst.State.NULL)
-        cls.duration = 0
+    def stop(self):
+        self.bin.set_state(Gst.State.NULL)
+        self.duration = 0
 
-    @classmethod
-    def is_state(cls, state):
-        return cls.bin.get_state(1000)[1] == state
+    def is_state(self, state):
+        return self.bin.get_state(1000)[1] == state

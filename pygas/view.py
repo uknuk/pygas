@@ -2,9 +2,9 @@ from dotmap import DotMap
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
-from functools import reduce
 from .panel import Panel
 from . import util
+
 
 class View:
 
@@ -15,16 +15,16 @@ class View:
                                         default_width=cls.WIDTH,
                                         window_position=Gtk.WindowPosition.CENTER)
 
-        frames = DotMap({
+        tabs = DotMap({
             "player": Gtk.Box(orientation=Gtk.Orientation.VERTICAL),
             "arts": Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         })
 
-        cls.panel = Panel(cls.win, frames, cls.WIDTH, cls.HEIGHT)
+        cls.panel = Panel(cls.win, tabs, cls.WIDTH, cls.HEIGHT)
 
         cls.stack = Gtk.Stack()
         for n in ['player', 'arts']:
-            cls.stack.add_titled(frames[n], n, n.title())
+            cls.stack.add_titled(tabs[n], n, n.title())
 
         cls.header = Gtk.HeaderBar()
         cls.header.set_show_close_button(True)

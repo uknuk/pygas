@@ -8,25 +8,19 @@ gi.require_version('Pango', '1.0')
 from gi.repository import Pango
 from . import util
 
+
 def time(usecs):
     return datetime.fromtimestamp(usecs/1e9).isoformat()[-12:-7]  # min:sec
 
+
 class Panel:
 
-    def __init__(self, win, frames, width, height):
+    def __init__(self, win, tabs, width, height):
         self.win = win
         self.max_width = width
         self.max_height = height/2
 
-        # self.css = Gtk.CssProvider()
-        # self.css.load_from_data(
-        #     bytes("GtkTextView { font-size: 16px; font-weight: bold; color: #a00; }".encode()))
-
-        # self.buffer = Gtk.TextBuffer()
-        # self.text = Gtk.TextView(buffer=self.buffer, wrap_mode=Gtk.WrapMode.WORD)
-        # self.text.get_style_context().add_provider(self.css, 0)
-
-        self.desc = Pango.FontDescription(string = 'Ubuntu')
+        self.desc = Pango.FontDescription(string='Ubuntu')
         self.layout = Gtk.Label().get_layout()
 
         self.labels = DotMap({'tracks': [], 'albs': [], 'sel_arts': [], 'sel_art': Gtk.Label()})
@@ -43,11 +37,11 @@ class Panel:
             'arts': Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         })
 
-        self.pack_start(frames.arts, self.panes.sel_arts)
-        self.pack_start(frames.arts, self.panes.arts)
+        self.pack_start(tabs.arts, self.panes.sel_arts)
+        self.pack_start(tabs.arts, self.panes.arts)
 
-        pane_keys = ["song", "info", "sel_art", "albs", "tracks"]
-        [self.pack_start(frames.player, self.panes[k]) for k in pane_keys]
+        [self.pack_start(tabs.player, self.panes[k]) for k in ["song", "info", "sel_art"]]
+        [self.pack_start(tabs.player, self.framed(self.panes[k])) for k in ["albs", "tracks"]]
 
         for l in ['alb', 'track']:
             self.labels[l] = Gtk.Label()
@@ -59,6 +53,7 @@ class Panel:
 
         self.slider = Gtk.ProgressBar(show_text=True)
         self.pack_start(self.panes.info, self.slider, True)
+        #self.arts = None
 
     def change_color(self, kind, n, fro, to):
         lbl = self.labels[kind][n]
@@ -109,8 +104,8 @@ class Panel:
         btn = Gtk.Button()
         btn.connect("clicked", fun, n)
         btn.add(lbl)
-        if kind == 'arts':
-            self.arts.append(btn)
+        # if kind == 'arts':
+        #     self.arts.append(btn)
 
         btn.set_size_request(size[0], size[1])
         align = Gtk.Alignment()
@@ -119,10 +114,10 @@ class Panel:
 
     def add_buttons(self, kind, names, fun, played=None):
         self.desc.set_size(int(round(int(Panel.font_size[kind] * Pango.SCALE))))
-        if kind == 'arts':
-            self.arts = []
-        else:
-            self.clear(kind)
+        # if kind == 'arts':
+        #     self.arts = []
+        # else:
+        self.clear(kind)
 
         n = 0
         row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
@@ -162,20 +157,14 @@ class Panel:
 
         Panel.font_size.tracks = Panel.font_size.albs = s
 
-    def show_artists(self, visible):
-        if visible:
-            self.clear('sel_arts')
-        [btn.set_sensitive(visible) for btn in self.arts]
+    #def show_artists(self):
+        # if visible:
+        #     self.clear('sel_arts')
+        # [btn.set_sensitive(visible) for btn in self.arts]
+
 
     def clear(self, kind):
         [child.destroy() for child in self.panes[kind].get_children()]
-
-    # @classmethod
-    # def get_font(cls, kind, length):
-    #     fp = Panel.FONT_PARAMS[kind]
-    #     diff = max(length - fp[2], 0)
-    #     fs = int(max(fp[0] - diff / fp[3], fp[1]))
-    #     return fs
 
     def update_slider(self, pos, duration):
         self.slider.set_fraction(pos / duration)
@@ -183,7 +172,7 @@ class Panel:
 
     def set_info(self, info):
         for key, val in info.items():
-            for i in range (40,10,-1):
+            for i in range(40, 10, -1):
                 self.desc.set_size(int(round(int(i) * Pango.SCALE)))
                 self.layout.set_font_description(self.desc)
                 self.layout.set_markup(val)
@@ -197,3 +186,10 @@ class Panel:
     @staticmethod
     def write(lbl, txt, size, color):
         lbl.set_markup(util.set_span(txt, color, size))
+
+    @staticmethod
+    def framed(pane):
+        frame = Gtk.Frame()
+        frame.add(pane)
+        return frame
+

@@ -3,58 +3,53 @@ import re
 from . import util
 from .view import View
 
+
 class Albums:
+    def __init__(self):
+        self.shown = []
+        self.chosen = []
+        self.dirs = []
+        self.dir = None
+        self.played = None
+        self.num = 0
 
-    shown = []
-    chosen = []
-    dirs = []
-    dir = None
-    played = None
-    num = 0
-
-    @classmethod
-    def show(cls, art_dir, shown_tracks, new=True):
-        albs = sorted(os.listdir(art_dir), key=lambda d: cls.convert(d))
-        cls.shown = cls.get_names(albs)
-        cls.chosen = [os.path.join(art_dir, a) for a in albs]
-        played = None if new else cls.num
-        View.panel.select_font(cls.shown + shown_tracks)
-        View.panel.add_buttons('albs', cls.shown, cls.clicked, played)
+    def show(self, art_dir, shown_tracks, new=True):
+        albs = sorted(os.listdir(art_dir), key=lambda d: self.convert(d))
+        self.shown = self.get_names(albs)
+        self.chosen = [os.path.join(art_dir, a) for a in albs]
+        played = None if new else self.num
+        View.panel.select_font(self.shown + shown_tracks)
+        View.panel.add_buttons('albs', self.shown, self.clicked, played)
         View.switch_to('player')
-        if new and len(cls.shown) == 1:
-            cls.select(0)
+        if new and len(self.shown) == 1:
+            self.select(0)
 
-    @classmethod
-    def clicked(cls, _, a_num):
-        cls.select(a_num)
+    def clicked(self, _, a_num):
+        self.select(a_num)
 
-    @classmethod
-    def select(cls, a_num, t_num=0):
-        cls.dirs = cls.chosen
-        cls.play_number(a_num, t_num)
+    def select(self, a_num, t_num=0):
+        self.dirs = self.chosen
+        self.play_number(a_num, t_num)
 
-    @classmethod
-    def play_name(cls, alb_dir, t_num):
-        cls.select(cls.chosen.index(alb_dir), t_num)
+    def play_name(self, alb_dir, t_num):
+        self.select(self.chosen.index(alb_dir), t_num)
 
-    @classmethod
-    def play_number(cls, a_num, t_num):
-        View.panel.change_colors('albs', cls.num, a_num)
-        cls.num = a_num if a_num < len(cls.dirs) else 0
-        cls.dir = cls.dirs[cls.num]
-        cls.played = os.path.basename(cls.dir)
-        cls.show_tracks(cls.dir, t_num, cls.shown)
+    def play_number(self, a_num, t_num):
+        View.panel.change_colors('albs', self.num, a_num)
+        self.num = a_num if a_num < len(self.dirs) else 0
+        self.dir = self.dirs[self.num]
+        self.played = os.path.basename(self.dir)
+        self.show_tracks(self.dir, t_num, self.shown)
         # =Tracks.show, set in Artists.load
 
-    @classmethod
-    def get_names(cls, alb_dirs):
+    @staticmethod
+    def get_names(alb_dirs):
         return [util.cut_base(d, View.NAME_MAX["alb"]) for d in alb_dirs]
 
-    @classmethod
-    def next(cls):
-        a_num = cls.num + 1
-        if a_num < len(cls.dirs):
-            cls.play_number(a_num, 0)
+    def next(self):
+        a_num = self.num + 1
+        if a_num < len(self.dirs):
+            self.play_number(a_num, 0)
 
     @staticmethod
     def convert(name):

@@ -1,103 +1,90 @@
 import os
 from os import path
-from functools import reduce
 from . import util
 from .view import View
-from .albums import Albums
-from .tracks import Tracks
+
 
 class Artists:
+    def __init__(self, albums, tracks):
+        self.albums = albums
+        self.tracks = tracks
+        self.names = []
+        self.dirs = {}
+        self.shorts = {}
+        self.shown = []
+        self.played = None
+        self.chosen = None
 
-    names = []
-    dirs = {}
-    shorts = {}
-    shown = []
-    played = None
-    chosen = None
+    def load(self):
+        self.tracks.inject(self, self.albums.next)
+        self.albums.show_tracks = self.tracks.show
 
-    @classmethod
-    def load(cls):
-        Tracks.inject(cls, Albums.next)
-        Albums.show_tracks = Tracks.show
-
-        with util.open_file(cls.DIRS_FILE) as f:
+        with util.open_file(self.DIRS_FILE) as f:
             roots = f.readlines()[0].split()
             for r in roots:
                 names = os.listdir(r)
-                cls.names += names
+                self.names += names
                 for name in names:
-                    cls.dirs[name] = path.join(r, name)
-                    cls.shorts[name] = util.cut(name, View.NAME_MAX['art'])
+                    self.dirs[name] = path.join(r, name)
+                    self.shorts[name] = util.cut(name, View.NAME_MAX['art'])
 
-        cls.names = sorted(cls.names)
-        cls.shown = cls.names
-        View.panel.add_buttons('arts', [cls.shorts[n] for n in cls.names], cls.clicked)
+        self.names = sorted(self.names)
+        self.shown = self.names
+        View.panel.add_buttons('arts', [self.shorts[n] for n in self.names], self.clicked)
 
-    @classmethod
-    def reload(cls):
-        cls.names = []
-        cls.load()
+    def reload(self):
+        self.names = []
+        self.load()
         if View.stack.visible_child_name == "arts":
-            cls.show()
+            self.show()
 
-    @classmethod
-    def show(cls, entry=None):
-        names = cls.names
+    def show(self, entry=None):
+        names = self.names
 
         if entry:
-            View.panel.show_artists(False)
             sel = entry[0:-1] if entry[-1] == '§' else entry
             names = list(filter(lambda a: a.replace('_', ' ').lower().startswith(sel), names))
 
             if len(names) == 1:
-                cls.select(names[0])
-                Albums.show(cls.dirs[names[0]], Tracks.shown)
+                self.select(names[0])
+                self.albums.show(self.dirs[names[0]], self.tracks.shown)
                 return
 
-            cls.shown = names
-            View.panel.add_buttons('sel_arts', names, cls.clicked)
+            self.shown = names
+            View.panel.add_buttons('sel_arts', names, self.clicked)
         else:
-            cls.shown = names
-            View.panel.show_artists(True)
+            self.shown = names
+            View.panel.clear('sel_arts')
 
-        # text = '' if entry else " | ".join([cls.shorts[n] for n in names])
-        # View.panel.buffer.set_text(text, -1)
         View.win.show_all()
 
-    @classmethod
-    def clicked(cls, _, num):
-        cls.select(cls.shown[num])
+    def clicked(self, _, num):
+        self.select(self.shown[num])
 
-    @classmethod
-    def select(cls, name):
-        cls.chosen = name
-        if cls.chosen != cls.played:
-            View.panel.write_label("sel_art", cls.chosen + ":")
+    def select(self, name):
+        self.chosen = name
+        if self.chosen != self.played:
+            View.panel.write_label("sel_art", self.chosen + ":")
 
         View.scroll("Up")
-        Albums.show(cls.dirs[cls.chosen], Tracks.shown)
+        self.albums.show(self.dirs[self.chosen], self.tracks.shown)
 
-    @classmethod
-    def play(cls, art, alb, t_num):
-        cls.chosen = art
-        art_dir = cls.dirs[art]
-        Albums.show(art_dir, Tracks.shown)
-        Albums.play_name(path.join(art_dir, alb), int(t_num))
+    def play(self, art, alb, t_num):
+        self.chosen = art
+        art_dir = self.dirs[art]
+        self.albums.show(art_dir, self.tracks.shown)
+        self.albums.play_name(path.join(art_dir, alb), int(t_num))
 
-    @classmethod
-    def restore(cls):
+    def restore(self):
         View.panel.write_label("sel_art", '')
-        cls.chosen = cls.played
-        Albums.show(cls.dirs[cls.chosen], Tracks.shown, False)
+        self.chosen = self.played
+        self.albums.show(self.dirs[self.chosen], self.tracks.shown, False)
 
-    @classmethod
-    def selected(cls):
-        cls.played = cls.chosen
+    def selected(self):
+        self.played = self.chosen
 
-    @classmethod
-    def played_directory(cls):
-        return cls.dirs[cls.played]
+    def played_directory(self):
+        return self.dirs[self.played]
 
-    @classmethod
-    def get_played(cls):
-        return cls.played, Albums.played
+    def get_played(self):
+        return self.played, self.albums.played

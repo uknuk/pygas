@@ -3,29 +3,29 @@ import re
 from .view import View
 from . import util
 
+
 class Tracks:
-    files = []
-    shown = []
-    num = 0
+    def __init__(self):
+        self.files = []
+        self.shown = []
+        self.num = 0
+        self.arts = None
+        self.next_album = None
 
-    @classmethod
-    def inject(cls, arts, next_album):
-        cls.arts = arts
-        cls.next_album = next_album
+    def inject(self, arts, next_album):
+        self.arts = arts
+        self.next_album = next_album
 
-    @classmethod
-    def show(cls, alb, num, shown_albums):
-        cls.arts.selected()
-        alb_dir = path.join(cls.arts.played_directory(), alb)
-        cls.files = sorted([alb_dir] if path.isfile(alb_dir) else cls.load(alb_dir))
-        cls.shown = [util.cut_base(f, View.NAME_MAX["track"]) for f in cls.files]
-        cls.arts.restore()
+    def show(self, alb, num, shown_albums):
+        self.arts.selected()
+        alb_dir = path.join(self.arts.played_directory(), alb)
+        self.files = sorted([alb_dir] if path.isfile(alb_dir) else self.load(alb_dir))
+        self.shown = [util.cut_base(f, View.NAME_MAX["track"]) for f in self.files]
+        self.arts.restore()
 
-        #View.set_items_font('tracks', [cls.shown, shown_albums])
-        View.panel.select_font(cls.shown + shown_albums)
-        #View.add_buttons('tracks', cls.shown, cls.clicked)
-        View.panel.add_buttons('tracks', cls.shown, cls.clicked)
-        cls.play(num)
+        View.panel.select_font(self.shown + shown_albums)
+        View.panel.add_buttons('tracks', self.shown, self.clicked)
+        self.play(num)
 
     @staticmethod
     def load(alb):
@@ -40,36 +40,32 @@ class Tracks:
                 tracks += Tracks.load(entry)
         return tracks
 
-    @classmethod
-    def clicked(cls, _, num):
-        cls.play(num)
+    def clicked(self, _, num):
+        self.play(num)
 
-    @classmethod
-    def play(cls, num):
-        View.panel.change_colors('tracks', cls.num, num)
+    def play(self, num):
+        View.panel.change_colors('tracks', self.num, num)
         View.scroll('Up')
-        cls.num = num
-        track = cls.files[num]
-        cls.set_info(path.basename(track))
-        cls.play_track(track)  # Player.play
-        cls.save()
+        self.num = num
+        track = self.files[num]
+        self.set_info(path.basename(track))
+        self.play_track(track)  # Player.play
+        self.save()
 
-    @classmethod
-    def set_info(cls, track):
-        art, alb = cls.arts.get_played()
+    def set_info(self, track):
+        art, alb = self.arts.get_played()
         View.panel.set_info({'alb': alb, 'track': track})
         View.set_artist(art)
 
-    @classmethod
-    def save(cls):
-        art, alb = cls.arts.get_played()
-        with util.open_file(cls.LAST_FILE, 'w') as f:
-            f.write("\n".join([art, alb, str(cls.num)]))
+    def save(self):
+        art, alb = self.arts.get_played()
+        track = f"{path.splitext(path.basename(self.files[self.num]))[0]}\n"
+        with util.open_file(self.LAST_FILE, 'w') as f:
+            f.write("\n".join([art, alb, str(self.num), track]))
 
-    @classmethod
-    def next(cls):
-        next_num = cls.num + 1
-        if next_num == len(cls.files):
-            cls.next_album()
+    def next(self):
+        next_num = self.num + 1
+        if next_num == len(self.files):
+            self.next_album()
         else:
-            cls.play(next_num)
+            self.play(next_num)
