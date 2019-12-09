@@ -14,9 +14,9 @@ View.NAME_MAX = {
 View.WIDTH = 1024
 View.HEIGHT = 572
 
-Panel.FONT_RANGE = (40,9,-1)
+Panel.FONT_RANGE = (40,10,-1)
 Panel.WIDTH_MARGIN = 20
-Panel.HEIGHT_MARGIN = 10
+Panel.HEIGHT_MARGIN = 20
 
 Panel.COLOR = {
     'sel_art': 'blue',
