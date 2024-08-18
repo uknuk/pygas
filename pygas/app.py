@@ -1,3 +1,7 @@
+import os
+import subprocess
+import sys
+
 import gi
 from gi.repository import Gtk
 from gi.repository import Gdk
@@ -21,7 +25,7 @@ class App(Gtk.Application):
             'Right': self.show_artists,
             'Up': lambda: View.scroll('Up'),
             'Down': lambda: View.scroll('Down'),
-            'F1': self.artists.reload,
+            'F1': self.restart_app,
             'F5': lambda: self.change_font(-1),
             'F6': lambda: self.change_font(1),
             'F11': lambda: self.player.volume(-1),
@@ -29,6 +33,21 @@ class App(Gtk.Application):
             'space': self.player.change_state,
             'Escape': self.artists.restore
         }
+
+
+    def restart_app(self, widget=None):
+        print("Restarting application...")
+        GLib.timeout_add(100, self.restart)
+
+    def restart(self):
+        class_dir = os.path.dirname(os.path.realpath(__file__))
+        parent_dir = os.path.dirname(class_dir)
+        script = os.path.join(parent_dir, 'pygas.py')
+        subprocess.Popen([sys.executable, script], cwd=parent_dir)
+
+        self.quit()
+        return False
+
 
     def show_artists(self):
         View.switch_to('arts')
