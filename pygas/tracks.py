@@ -59,7 +59,8 @@ class Tracks:
 
     def save(self):
         art, alb = self.arts.get_played()
-        track = f"{path.splitext(path.basename(self.files[self.num]))[0]}\n"
+        # track = f"{path.splitext(path.basename(self.files[self.num]))[0]}\n"
+        track = "{}\n".format(path.splitext(path.basename(self.files[self.num]))[0])
         with util.open_file(self.LAST_FILE, 'w') as f:
             f.write("\n".join([art, alb, str(self.num), track]))
 
