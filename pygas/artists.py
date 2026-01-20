@@ -1,5 +1,5 @@
 import os
-from os import path
+# from os import environ, path
 from . import util
 from .view import View
 
@@ -19,13 +19,17 @@ class Artists:
         self.tracks.inject(self, self.albums.next)
         self.albums.show_tracks = self.tracks.show
 
-        with util.open_file(self.DIRS_FILE) as f:
-            roots = f.readlines()[0].split()
-            for r in roots:
+        try:
+            with util.open_file(self.DIRS_FILE) as f:
+                roots = f.readlines()[0].split()
+        except FileNotFoundError:
+            roots = [os.path.join(os.environ['HOME'], "Music")]
+        
+        for r in roots:
                 names = os.listdir(r)
                 self.names += names
                 for name in names:
-                    self.dirs[name] = path.join(r, name)
+                    self.dirs[name] = os.path.join(r, name)
                     self.shorts[name] = util.cut(name, View.NAME_MAX['art'])
 
         self.names = sorted(self.names)
@@ -73,7 +77,7 @@ class Artists:
         self.chosen = art
         art_dir = self.dirs[art]
         self.albums.show(art_dir, self.tracks.shown)
-        self.albums.play_name(path.join(art_dir, alb), int(t_num))
+        self.albums.play_name(os.path.join(art_dir, alb), int(t_num))
 
     def restore(self):
         View.panel.write_label("sel_art", '')
