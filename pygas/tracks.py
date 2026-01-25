@@ -31,7 +31,7 @@ class Tracks:
     def load(alb):
         tracks = []
         # exp = re.compile('\.mp3$|\.mp4a$|\.mpc$|\.ogg$') doesn't work
-        exp = re.compile('.*mp3|.*mp4a|.*mpc|.*ogg|.*webm')
+        exp = re.compile('.*mp3|.*mp4a|.*mpc|.*ogg|.*webm|.*opus$')
         for entry in list(map(lambda f: path.join(alb, f), listdir(alb))):
             if path.isfile(entry):
                 if exp.match(entry):
