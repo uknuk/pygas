@@ -42,7 +42,7 @@ class App(Gtk.Application):
     def restart(self):
         class_dir = os.path.dirname(os.path.realpath(__file__))
         parent_dir = os.path.dirname(class_dir)
-        script = os.path.join(parent_dir, 'pygas.py')
+        script = os.path.join(parent_dir, 'run.py')
         subprocess.Popen([sys.executable, script], cwd=parent_dir)
 
         self.quit()
