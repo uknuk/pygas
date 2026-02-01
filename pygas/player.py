@@ -4,6 +4,7 @@ from gi.repository import Gst, GLib
 import math
 import os
 from .view import View
+import alsaaudio
 
 
 class Player:
@@ -18,6 +19,7 @@ class Player:
         self.bus.connect('message', self.on_message)
         tracks.play_track = self.play
         self.tracks = tracks
+        self.mixer = alsaaudio.Mixer()
         
     def on_message(self, _, msg):
         if msg.type == Gst.MessageType.TAG:
@@ -79,6 +81,8 @@ class Player:
         if self.duration != 0:
             View.panel.update_slider(self.bin.query_position(Gst.Format.TIME)[1], self.duration)
 
+        View.panel.write_label('vol', "Vol {} %".format(int(self.mixer.getvolume()[0])))
+
         return True
 
     def change_state(self):
@@ -86,15 +90,6 @@ class Player:
             self.bin.set_state(Gst.State.PAUSED)
         elif self.is_state(Gst.State.PAUSED):
             self.bin.set_state(Gst.State.PLAYING)
-
-    def volume(self, delta):
-        vol = self.bin.get_property('volume')
-        db = 10*math.log10(vol) + delta
-        vol = math.pow(10, db/10)
-        if vol < 10:
-            self.bin.set_property('volume', vol)
-            View.switch_to('player')
-            View.panel.write_label('vol', "{} db".format(int(db)))
 
     def stop(self):
         self.bin.set_state(Gst.State.NULL)

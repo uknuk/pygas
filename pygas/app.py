@@ -28,8 +28,6 @@ class App(Gtk.Application):
             'F1': self.restart_app,
             'F5': lambda: self.change_font(-1),
             'F6': lambda: self.change_font(1),
-            'F11': lambda: self.player.volume(-1),
-            'F12': lambda: self.player.volume(1),
             'space': self.player.change_state,
             'Escape': self.artists.restore
         }
